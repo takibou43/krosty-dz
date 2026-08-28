@@ -31,6 +31,29 @@ export async function getCars(filters = {}) {
   } catch { return []; }
 }
 
+export async function getMyCars(userId) {
+  const client = getClient();
+  if (!client || !userId) return [];
+  try {
+    const { data, error } = await client
+      .from('cars')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) return [];
+    return data || [];
+  } catch { return []; }
+}
+
+export async function deleteCar(id) {
+  const client = getClient();
+  if (!client || !id) return false;
+  try {
+    const { error } = await client.from('cars').delete().eq('id', id);
+    return !error;
+  } catch { return false; }
+}
+
 export async function getCarsByIds(ids) {
   const client = getClient();
   if (!client || !Array.isArray(ids) || ids.length === 0) return [];
