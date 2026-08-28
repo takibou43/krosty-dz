@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { addCar, isSupabaseConfigured } from '@/utils/supabase';
+import { addCar, isSupabaseConfigured, uploadCarImages } from '@/utils/supabase';
 import { WILAYAT, FUEL_TYPES, GEARBOX_TYPES, DOCUMENTS_STATUS } from '@/utils/constants';
 
 const initialForm = {
@@ -26,11 +26,32 @@ export default function AddCarPage() {
   const router = useRouter();
   const [formData, setFormData] = useState(initialForm);
   const [loading, setLoading] = useState(false);
+  const [uploadingLabel, setUploadingLabel] = useState(null);
   const [error, setError] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+
+  const MAX_IMAGES = 8;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImagesChange = (e) => {
+    const selected = Array.from(e.target.files || []);
+    if (selected.length === 0) return;
+
+    const combined = [...imageFiles, ...selected].slice(0, MAX_IMAGES);
+    setImageFiles(combined);
+    setImagePreviews(combined.map((f) => URL.createObjectURL(f)));
+    e.target.value = '';
+  };
+
+  const removeImage = (index) => {
+    const updatedFiles = imageFiles.filter((_, i) => i !== index);
+    setImageFiles(updatedFiles);
+    setImagePreviews(updatedFiles.map((f) => URL.createObjectURL(f)));
   };
 
   const handleSubmit = async (e) => {
@@ -43,6 +64,14 @@ export default function AddCarPage() {
     }
 
     setLoading(true);
+
+    let images = [];
+    if (imageFiles.length > 0) {
+      setUploadingLabel(`جاري رفع الصور (${imageFiles.length})...`);
+      images = await uploadCarImages(imageFiles);
+      setUploadingLabel(null);
+    }
+
     const result = await addCar({
       title: formData.title,
       description: formData.description,
@@ -56,7 +85,7 @@ export default function AddCarPage() {
       documents: formData.documents,
       price: parseInt(formData.price, 10) || 0,
       phone_number: formData.phone_number,
-      images: [],
+      images,
       is_featured: false,
     });
     setLoading(false);
@@ -170,6 +199,51 @@ export default function AddCarPage() {
           </div>
 
           <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1">
+              صور السيارة (حتى {MAX_IMAGES} صور)
+            </label>
+            <label
+              htmlFor="car-images-input"
+              className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 bg-slate-50 p-5 text-center text-sm text-gray-500 hover:border-accent hover:text-accent transition"
+            >
+              <span className="text-2xl">📷</span>
+              <span className="font-semibold">اضغط لإضافة صور</span>
+              <span className="text-xs text-gray-400">JPG أو PNG — {imageFiles.length}/{MAX_IMAGES} مضافة</span>
+            </label>
+            <input
+              id="car-images-input"
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleImagesChange}
+              disabled={imageFiles.length >= MAX_IMAGES}
+            />
+
+            {imagePreviews.length > 0 && (
+              <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {imagePreviews.map((src, i) => (
+                  <div key={src} className="relative group">
+                    <img
+                      src={src}
+                      alt={`صورة ${i + 1}`}
+                      className="h-20 w-full rounded-lg object-cover border border-gray-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(i)}
+                      className="absolute -top-1.5 -left-1.5 h-5 w-5 rounded-full bg-red-600 text-white text-xs font-bold leading-5 shadow"
+                      aria-label="حذف الصورة"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1">وصف تفصيلي للسيارة</label>
             <textarea
               name="description"
@@ -186,7 +260,7 @@ export default function AddCarPage() {
             disabled={loading}
             className="w-full bg-accent hover:bg-orange-700 disabled:opacity-60 text-white font-bold py-3 rounded-lg transition duration-300 text-base shadow"
           >
-            {loading ? 'جاري النشر...' : '🚀 نشر الإعلان الآن'}
+            {loading ? (uploadingLabel || 'جاري النشر...') : '🚀 نشر الإعلان الآن'}
           </button>
         </form>
       </div>
