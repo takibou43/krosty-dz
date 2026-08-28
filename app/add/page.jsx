@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { addCar, isSupabaseConfigured, uploadCarImages } from '@/utils/supabase';
-import { WILAYAT, FUEL_TYPES, GEARBOX_TYPES, DOCUMENTS_STATUS } from '@/utils/constants';
+import { WILAYAT, BRANDS, FUEL_TYPES, GEARBOX_TYPES, DOCUMENTS_STATUS } from '@/utils/constants';
 
 const initialForm = {
   title: '',
@@ -133,7 +133,12 @@ export default function AddCarPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">الماركة *</label>
-              <input type="text" name="brand" required placeholder="Renault" className={inputClass} value={formData.brand} onChange={handleChange} />
+              <select name="brand" required className={inputClass} value={formData.brand} onChange={handleChange}>
+                <option value="">اختر الماركة</option>
+                {BRANDS.map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">الموديل *</label>
