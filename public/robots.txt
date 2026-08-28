@@ -1,0 +1,30 @@
+# Robots.txt لـ SEO Optimization
+# تم تحسينه لـ Crawling بكفاءة عالية
+
+User-agent: *
+Allow: /
+Allow: /cars
+Allow: /cars/*
+Disallow: /admin
+Disallow: /api
+Disallow: /.next
+Disallow: /node_modules
+
+# Google Bot - يسمح بـ Access أسرع
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Bing Bot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# إخبار محركات البحث عن الـ Sitemap
+Sitemap: https://krostydz.com/sitemap.xml
+Sitemap: https://www.krostydz.com/sitemap.xml
+
+# صفحة السياسة والتواصل
+Allow: /privacy
+Allow: /terms
+Allow: /contact
