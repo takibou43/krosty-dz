@@ -41,6 +41,23 @@ export async function getCarById(id) {
   } catch { return null; }
 }
 
+  export async function uploadCarImages(files) {
+      const client = getClient();
+      if (!client || !files || files.length === 0) return [];
+      const urls = [];
+      for (const file of files) {
+            try {
+                    const ext = file.name.split('.').pop();
+                    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+                    const { error } = await client.storage.from('car-images').upload(path, file, { cacheControl: '3600', upsert: false });
+                    if (error) continue;
+                    const { data } = client.storage.from('car-images').getPublicUrl(path);
+                    if (data?.publicUrl) urls.push(data.publicUrl);
+            } catch {}
+      }
+      return urls;
+  }
+
 export async function addCar(carData) {
   const client = getClient();
   if (!client) return null;
