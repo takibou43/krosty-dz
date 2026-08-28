@@ -1,37 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { WILAYAT, BRANDS } from '@/utils/constants';
 
-const wilayat = [
-  'الجزائر العاصمة', 'وهران', 'قسنطينة', 'سطيف', 'عنابة',
-  'بجاية', 'تيزي وزو', 'قالمة', 'سكيكدة', 'المدية',
-  'تلمسان', 'البليدة', 'سيدي بلعباس', 'مستغانم', 'الشلف',
-  'أم البواقي', 'باتنة', 'بسكرة', 'الجلفة', 'المسيلة',
-  'غرداية', 'ورقلة', 'تبسة', 'سوق أهراس', 'خنشلة',
-  'جيجل', 'عين الدفلى', 'النعامة', 'عين تيموشنت', 'تيارت',
-  'بومرداس', 'الطارف', 'تندوف', 'تيسمسيلت', 'إليزي',
-  'برج بوعريريج', 'البويرة', 'الأغواط', 'أدرار', 'بشار',
-  'تمنراست', 'معسكر', 'الوادي', 'غليزان', 'بريكة'
-];
-
-const brands = [
-  'Renault', 'Peugeot', 'Volkswagen', 'Hyundai', 'Dacia',
-  'Toyota', 'Honda', 'Kia', 'BMW', 'Mercedes-Benz',
-  'Audi', 'Citroën', 'Opel', 'Ford', 'Chevrolet',
-  'Nissan', 'Mazda', 'Suzuki', 'Mitsubishi', 'Fiat',
-  'Seat', 'Skoda', 'Jeep', 'Land Rover', 'Tesla',
-  'Chery', 'Geely', 'Great Wall (GWM)', 'Haval', 'BYD',
-  'Changan', 'JAC', 'MG', 'FAW', 'Dongfeng',
-  'GAC', 'Wuling', 'Omoda', 'Jaecoo', 'Exeed',
-  'Zotye', 'Lifan', 'Baic', 'Foton', 'SsangYong',
-  'Genesis', 'Subaru', 'Isuzu', 'Daihatsu', 'Alfa Romeo',
-  'Lancia', 'Volvo', 'Saab', 'Mini', 'Porsche',
-  'Jaguar', 'Bentley', 'Rolls-Royce', 'Aston Martin', 'Maserati',
-  'Ferrari', 'Lamborghini', 'McLaren', 'Dodge', 'Chrysler',
-  'Cadillac', 'GMC', 'Lincoln', 'Buick', 'RAM',
-  'Lexus', 'Infiniti', 'Acura', 'Lada', 'Proton',
-  'Tata', 'Mahindra'
-];
+const wilayat = WILAYAT;
+const brands = BRANDS;
 
 const fuelTypes = ['Essence', 'Diesel', 'GPL', 'Hybride', 'Électrique'];
 const gearboxTypes = ['Manuelle', 'Automatique'];
