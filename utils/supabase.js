@@ -31,6 +31,16 @@ export async function getCars(filters = {}) {
   } catch { return []; }
 }
 
+export async function getCarsByIds(ids) {
+  const client = getClient();
+  if (!client || !Array.isArray(ids) || ids.length === 0) return [];
+  try {
+    const { data, error } = await client.from('cars').select('*').in('id', ids);
+    if (error) return [];
+    return data || [];
+  } catch { return []; }
+}
+
 export async function getCarById(id) {
   const client = getClient();
   if (!client) return null;
@@ -41,22 +51,27 @@ export async function getCarById(id) {
   } catch { return null; }
 }
 
-  export async function uploadCarImages(files) {
-      const client = getClient();
-      if (!client || !files || files.length === 0) return [];
-      const urls = [];
-      for (const file of files) {
-            try {
-                    const ext = file.name.split('.').pop();
-                    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-                    const { error } = await client.storage.from('car-images').upload(path, file, { cacheControl: '3600', upsert: false });
-                    if (error) continue;
-                    const { data } = client.storage.from('car-images').getPublicUrl(path);
-                    if (data?.publicUrl) urls.push(data.publicUrl);
-            } catch {}
-      }
-      return urls;
+export async function uploadCarImages(files) {
+  const client = getClient();
+  if (!client || !files || files.length === 0) return [];
+  const urls = [];
+  for (const file of files) {
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await client.storage.from('car-images').upload(path, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+      if (error) continue;
+      const { data } = client.storage.from('car-images').getPublicUrl(path);
+      if (data?.publicUrl) urls.push(data.publicUrl);
+    } catch {
+      // تجاهل الصورة التي فشل رفعها والمتابعة مع البقية
+    }
   }
+  return urls;
+}
 
 export async function addCar(carData) {
   const client = getClient();
@@ -66,6 +81,31 @@ export async function addCar(carData) {
     if (error) return null;
     return data?.[0] || null;
   } catch { return null; }
+}
+
+export async function getSimilarCars(car, limit = 4) {
+  const client = getClient();
+  if (!client || !car) return [];
+  try {
+    let query = client.from('cars').select('*').neq('id', car.id).limit(limit);
+    if (car.brand) query = query.eq('brand', car.brand);
+    const { data, error } = await query.order('created_at', { ascending: false });
+    if (error || !data || data.length === 0) {
+      // إن لم توجد سيارات من نفس الماركة، جرّب نفس الولاية
+      if (car.wilaya) {
+        const fallback = await client
+          .from('cars')
+          .select('*')
+          .neq('id', car.id)
+          .eq('wilaya', car.wilaya)
+          .order('created_at', { ascending: false })
+          .limit(limit);
+        return fallback.data || [];
+      }
+      return [];
+    }
+    return data;
+  } catch { return []; }
 }
 
 export async function searchCars(keyword) {
