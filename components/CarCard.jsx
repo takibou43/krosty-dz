@@ -3,9 +3,18 @@
 import Link from 'next/link';
 
 export default function CarCard({ car }) {
+    const cover = Array.isArray(car.images) && car.images.length > 0 ? car.images[0] : null;
   return (
     <Link href={`/cars/${car.id}`} className="block overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-      <div className="h-40 bg-gradient-to-br from-slate-100 to-slate-200" />
+      {cover ? (
+              <div className="h-40 w-full overflow-hidden bg-slate-100">
+                        <img src={cover} alt={car.title || 'car'} className="h-full w-full object-cover" loading="lazy" />
+              </div>
+            ) : (
+              <div className="h-40 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400 text-3xl">
+                        🚗
+              </div>
+          )}
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
