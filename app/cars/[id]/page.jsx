@@ -1,0 +1,121 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import AdSpace from '@/components/AdSpace';
+import { getCarById } from '@/utils/supabase';
+
+export default function CarDetailPage() {
+  const params = useParams();
+  const [car, setCar] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    const fetchCar = async () => {
+      setLoading(true);
+      const data = await getCarById(params.id);
+      if (!data) {
+        setNotFound(true);
+      } else {
+        setCar(data);
+      }
+      setLoading(false);
+    };
+    if (params?.id) fetchCar();
+  }, [params?.id]);
+
+  return (
+    <div className="min-h-screen bg-slate-50" dir="rtl">
+      <Header />
+
+      <main className="max-w-5xl mx-auto px-4 py-6 md:py-8">
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-600 mb-4"></div>
+            <p className="text-sm font-medium">جاري تحميل تفاصيل الإعلان...</p>
+          </div>
+        )}
+
+        {!loading && notFound && (
+          <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div className="text-5xl mb-3">🔍</div>
+            <p className="font-semibold text-gray-800">لم يتم العثور على هذا الإعلان</p>
+            <a href="/cars" className="mt-4 inline-block text-accent font-bold hover:underline">
+              العودة إلى كل السيارات
+            </a>
+          </div>
+        )}
+
+        {!loading && car && (
+          <div className="grid md:grid-cols-[1.4fr_1fr] gap-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="h-64 md:h-80 bg-gradient-to-br from-slate-100 to-slate-200" />
+              <div className="p-6">
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <h1 className="text-2xl font-bold text-slate-800">{car.title}</h1>
+                  {car.is_featured && (
+                    <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-accent whitespace-nowrap">
+                      مميز
+                    </span>
+                  )}
+                </div>
+                <p className="text-3xl font-black text-accent mb-6">
+                  {Number(car.price || 0).toLocaleString('ar-DZ')} دج
+                </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm mb-6">
+                  <Detail label="الماركة" value={car.brand} />
+                  <Detail label="الموديل" value={car.model} />
+                  <Detail label="سنة الصنع" value={car.year} />
+                  <Detail label="الولاية" value={car.wilaya} />
+                  <Detail label="الوقود" value={car.fuel_type} />
+                  <Detail label="ناقل الحركة" value={car.gearbox} />
+                  <Detail label="الممشى" value={car.mileage ? `${Number(car.mileage).toLocaleString('ar-DZ')} كم` : '-'} />
+                  <Detail label="الوثائق" value={car.documents} />
+                </div>
+
+                {car.description && (
+                  <div>
+                    <h2 className="font-bold text-slate-800 mb-2">الوصف</h2>
+                    <p className="text-sm text-slate-600 whitespace-pre-line">{car.description}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h2 className="font-bold text-slate-800 mb-3">تواصل مع البائع</h2>
+                {car.phone_number ? (
+                  <a
+                    href={`tel:${car.phone_number}`}
+                    className="block text-center bg-accent hover:bg-orange-700 text-white font-bold py-3 rounded-lg transition"
+                  >
+                    📞 {car.phone_number}
+                  </a>
+                ) : (
+                  <p className="text-sm text-slate-500">رقم الهاتف غير متوفر</p>
+                )}
+              </div>
+              <AdSpace />
+            </div>
+          </div>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+function Detail({ label, value }) {
+  return (
+    <div className="rounded-lg bg-slate-50 border border-slate-100 p-2.5">
+      <p className="text-xs text-slate-400">{label}</p>
+      <p className="font-semibold text-slate-700">{value || '-'}</p>
+    </div>
+  );
+}
