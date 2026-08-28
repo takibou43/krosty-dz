@@ -1,18 +1,28 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link'; // 1. قمنا باستيراد مكون التنقل من Next.js
 import { getFavoritesCount, subscribeFavorites } from '@/utils/favorites';
+import { useAuth } from '@/utils/useAuth';
+import { signOut } from '@/utils/supabase';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [favCount, setFavCount] = useState(0);
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setFavCount(getFavoritesCount());
     const unsubscribe = subscribeFavorites((ids) => setFavCount(ids.length));
     return unsubscribe;
   }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push('/');
+  };
 
   return (
     <header className="bg-white shadow-md border-b-4 border-accent sticky top-0 z-50">
@@ -54,6 +64,27 @@ export default function Header() {
               )}
             </Link>
 
+            {/* حالة تسجيل الدخول (Desktop) */}
+            {!loading && (
+              user ? (
+                <div className="hidden md:flex items-center gap-2">
+                  <Link href="/account" className="text-sm font-semibold text-gray-700 hover:text-accent transition">
+                    👤 حسابي
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="text-sm font-semibold text-gray-400 hover:text-red-600 transition"
+                  >
+                    خروج
+                  </button>
+                </div>
+              ) : (
+                <Link href="/login" className="hidden md:block text-sm font-semibold text-gray-700 hover:text-accent transition">
+                  تسجيل الدخول
+                </Link>
+              )
+            )}
+
             {/* 2. تحويل الزر إلى Link ليوجه المستخدم إلى صفحة إضافة إعلان */}
             <Link
               href="/add"  /* ⚠️ غير هذا المسار إلى اسم مجلد صفحة إضافة الإعلان لديك، مثلاً /create أو /add-listing */
@@ -82,6 +113,14 @@ export default function Header() {
             <Link href="/" className="hover:text-accent transition">الرئيسية</Link>
             <Link href="/cars" className="hover:text-accent transition">السيارات</Link>
             <Link href="/favorites" className="hover:text-accent transition">❤️ المفضلة{favCount > 0 ? ` (${favCount})` : ''}</Link>
+            {user ? (
+              <>
+                <Link href="/account" className="hover:text-accent transition">👤 حسابي</Link>
+                <button onClick={handleLogout} className="text-right hover:text-red-600 transition">تسجيل الخروج</button>
+              </>
+            ) : (
+              <Link href="/login" className="hover:text-accent transition">تسجيل الدخول</Link>
+            )}
             <Link href="/about" className="hover:text-accent transition">من نحن</Link>
             <Link href="/contact" className="hover:text-accent transition">اتصل بنا</Link>
           </nav>
