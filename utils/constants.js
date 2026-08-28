@@ -1,34 +1,38 @@
 // utils/constants.js - الثوابت والتكوينات
 
 export const WILAYAT = [
-  'الجزائر العاصمة', 'وهران', 'سطيف', 'قسنطينة', 'قالمة',
-  'سكيكدة', 'بجاية', 'تيزي وزو', 'المدية', 'تلمسان',
-  'الشلف', 'البليدة', 'سيدي بلعباس', 'سوق أهراس', 'الأغواط',
-  'تبسة', 'ورقلة', 'أنابة', 'مستغانم', 'بسكرة',
-  'المسيلة', 'غرداية', 'الجلفة', 'النعامة', 'عين تيموشنت',
-  'قصر القصار', 'جيجل', 'خنشلة', 'الواحات', 'دراية',
-  'الحمدانية', 'تيارت', 'تيسمسيلت', 'الوادي', 'خيشام',
-  'سوق سيفة', 'نيون', 'برج باجي مختار', 'تندوف',
+  'أدرار', 'الشلف', 'الأغواط', 'أم البواقي', 'باتنة',
+  'بجاية', 'بسكرة', 'بشار', 'البليدة', 'البويرة',
+  'تمنراست', 'تبسة', 'تلمسان', 'تيارت', 'تيزي وزو',
+  'الجزائر العاصمة', 'الجلفة', 'جيجل', 'سطيف', 'سعيدة',
+  'سكيكدة', 'سيدي بلعباس', 'عنابة', 'قالمة', 'قسنطينة',
+  'المدية', 'مستغانم', 'المسيلة', 'معسكر', 'ورقلة',
+  'وهران', 'البيض', 'إليزي', 'برج بوعريريج', 'بومرداس',
+  'الطارف', 'تندوف', 'تيسمسيلت', 'الوادي', 'خنشلة',
+  'سوق أهراس', 'تيبازة', 'ميلة', 'عين الدفلى', 'النعامة',
+  'عين تيموشنت', 'غرداية', 'غليزان', 'تيميمون', 'برج باجي مختار',
+  'أولاد جلال', 'بني عباس', 'إن صالح', 'إن قزام', 'توقرت',
+  'جانت', 'المغير', 'المنيعة',
 ];
 
 export const BRANDS = [
-    'Renault', 'Peugeot', 'Volkswagen', 'Hyundai', 'Dacia',
-    'Toyota', 'Honda', 'Kia', 'BMW', 'Mercedes-Benz',
-    'Audi', 'Citroën', 'Opel', 'Ford', 'Chevrolet',
-    'Nissan', 'Mazda', 'Suzuki', 'Mitsubishi', 'Fiat',
-    'Seat', 'Skoda', 'Jeep', 'Land Rover', 'Tesla',
-    'Chery', 'Geely', 'Great Wall (GWM)', 'Haval', 'BYD',
-    'Changan', 'JAC', 'MG', 'FAW', 'Dongfeng',
-    'GAC', 'Wuling', 'Omoda', 'Jaecoo', 'Exeed',
-    'Zotye', 'Lifan', 'Baic', 'Foton', 'SsangYong',
-    'Genesis', 'Subaru', 'Isuzu', 'Daihatsu', 'Alfa Romeo',
-    'Lancia', 'Volvo', 'Saab', 'Mini', 'Porsche',
-    'Jaguar', 'Bentley', 'Rolls-Royce', 'Aston Martin', 'Maserati',
-    'Ferrari', 'Lamborghini', 'McLaren', 'Dodge', 'Chrysler',
-    'Cadillac', 'GMC', 'Lincoln', 'Buick', 'RAM',
-    'Lexus', 'Infiniti', 'Acura', 'Lada', 'Proton',
-    'Tata', 'Mahindra',
-  ];
+  'Renault', 'Peugeot', 'Volkswagen', 'Hyundai', 'Dacia',
+  'Toyota', 'Honda', 'Kia', 'BMW', 'Mercedes-Benz',
+  'Audi', 'Citroën', 'Opel', 'Ford', 'Chevrolet',
+  'Nissan', 'Mazda', 'Suzuki', 'Mitsubishi', 'Fiat',
+  'Seat', 'Skoda', 'Jeep', 'Land Rover', 'Tesla',
+  'Chery', 'Geely', 'Great Wall (GWM)', 'Haval', 'BYD',
+  'Changan', 'JAC', 'MG', 'FAW', 'Dongfeng',
+  'GAC', 'Wuling', 'Omoda', 'Jaecoo', 'Exeed',
+  'Zotye', 'Lifan', 'Baic', 'Foton', 'SsangYong',
+  'Genesis', 'Subaru', 'Isuzu', 'Daihatsu', 'Alfa Romeo',
+  'Lancia', 'Volvo', 'Saab', 'Mini', 'Porsche',
+  'Jaguar', 'Bentley', 'Rolls-Royce', 'Aston Martin', 'Maserati',
+  'Ferrari', 'Lamborghini', 'McLaren', 'Dodge', 'Chrysler',
+  'Cadillac', 'GMC', 'Lincoln', 'Buick', 'RAM',
+  'Lexus', 'Infiniti', 'Acura', 'Lada', 'Proton',
+  'Tata', 'Mahindra',
+];
 
 export const FUEL_TYPES = ['Essence', 'Diesel', 'GPL'];
 export const GEARBOX_TYPES = ['Manuelle', 'Automatique'];
