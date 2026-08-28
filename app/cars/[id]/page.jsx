@@ -12,6 +12,7 @@ export default function CarDetailPage() {
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
 
   useEffect(() => {
     const fetchCar = async () => {
@@ -52,7 +53,37 @@ export default function CarDetailPage() {
         {!loading && car && (
           <div className="grid md:grid-cols-[1.4fr_1fr] gap-6">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="h-64 md:h-80 bg-gradient-to-br from-slate-100 to-slate-200" />
+              {Array.isArray(car.images) && car.images.length > 0 ? (
+                <div>
+                  <div className="h-64 md:h-80 w-full bg-slate-100">
+                    <img
+                      src={car.images[activeImage] || car.images[0]}
+                      alt={car.title}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  {car.images.length > 1 && (
+                    <div className="flex gap-2 overflow-x-auto p-3 border-t border-gray-100">
+                      {car.images.map((src, i) => (
+                        <button
+                          key={src}
+                          type="button"
+                          onClick={() => setActiveImage(i)}
+                          className={`h-16 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 ${
+                            i === activeImage ? 'border-accent' : 'border-transparent'
+                          }`}
+                        >
+                          <img src={src} alt={`صورة ${i + 1}`} className="h-full w-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="h-64 md:h-80 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400 text-5xl">
+                  🚗
+                </div>
+              )}
               <div className="p-6">
                 <div className="flex items-start justify-between gap-3 mb-4">
                   <h1 className="text-2xl font-bold text-slate-800">{car.title}</h1>
