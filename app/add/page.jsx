@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { addCar, isSupabaseConfigured, uploadCarImages } from '@/utils/supabase';
 import { WILAYAT, BRANDS, FUEL_TYPES, GEARBOX_TYPES, DOCUMENTS_STATUS } from '@/utils/constants';
+import { useAuth } from '@/utils/useAuth';
 
 const initialForm = {
   title: '',
@@ -24,6 +26,7 @@ const initialForm = {
 
 export default function AddCarPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [formData, setFormData] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [uploadingLabel, setUploadingLabel] = useState(null);
@@ -87,6 +90,7 @@ export default function AddCarPage() {
       phone_number: formData.phone_number,
       images,
       is_featured: false,
+      userId: user?.id || null,
     });
     setLoading(false);
 
@@ -113,6 +117,13 @@ export default function AddCarPage() {
         {error && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
             {error}
+          </div>
+        )}
+
+        {!user && (
+          <div className="mb-4 rounded-lg border border-orange-200 bg-orange-50 p-3 text-xs text-orange-700">
+            💡 لست مسجلاً الدخول — يمكنك نشر الإعلان كزائر، لكن لن يظهر في صفحة "حسابي" لاحقاً.{' '}
+            <Link href="/login" className="font-bold underline">سجّل الدخول</Link> لإدارة إعلاناتك بسهولة.
           </div>
         )}
 
