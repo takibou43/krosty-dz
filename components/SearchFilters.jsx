@@ -15,23 +15,23 @@ const wilayat = [
 ];
 
 const brands = [
-    'Renault', 'Peugeot', 'Volkswagen', 'Hyundai', 'Dacia',
-    'Toyota', 'Honda', 'Kia', 'BMW', 'Mercedes-Benz',
-    'Audi', 'Citroën', 'Opel', 'Ford', 'Chevrolet',
-    'Nissan', 'Mazda', 'Suzuki', 'Mitsubishi', 'Fiat',
-    'Seat', 'Skoda', 'Jeep', 'Land Rover', 'Tesla',
-    'Chery', 'Geely', 'Great Wall (GWM)', 'Haval', 'BYD',
-    'Changan', 'JAC', 'MG', 'FAW', 'Dongfeng',
-    'GAC', 'Wuling', 'Omoda', 'Jaecoo', 'Exeed',
-    'Zotye', 'Lifan', 'Baic', 'Foton', 'SsangYong',
-    'Genesis', 'Subaru', 'Isuzu', 'Daihatsu', 'Alfa Romeo',
-    'Lancia', 'Volvo', 'Saab', 'Mini', 'Porsche',
-    'Jaguar', 'Bentley', 'Rolls-Royce', 'Aston Martin', 'Maserati',
-    'Ferrari', 'Lamborghini', 'McLaren', 'Dodge', 'Chrysler',
-    'Cadillac', 'GMC', 'Lincoln', 'Buick', 'RAM',
-    'Lexus', 'Infiniti', 'Acura', 'Lada', 'Proton',
-    'Tata', 'Mahindra'
-  ];
+  'Renault', 'Peugeot', 'Volkswagen', 'Hyundai', 'Dacia',
+  'Toyota', 'Honda', 'Kia', 'BMW', 'Mercedes-Benz',
+  'Audi', 'Citroën', 'Opel', 'Ford', 'Chevrolet',
+  'Nissan', 'Mazda', 'Suzuki', 'Mitsubishi', 'Fiat',
+  'Seat', 'Skoda', 'Jeep', 'Land Rover', 'Tesla',
+  'Chery', 'Geely', 'Great Wall (GWM)', 'Haval', 'BYD',
+  'Changan', 'JAC', 'MG', 'FAW', 'Dongfeng',
+  'GAC', 'Wuling', 'Omoda', 'Jaecoo', 'Exeed',
+  'Zotye', 'Lifan', 'Baic', 'Foton', 'SsangYong',
+  'Genesis', 'Subaru', 'Isuzu', 'Daihatsu', 'Alfa Romeo',
+  'Lancia', 'Volvo', 'Saab', 'Mini', 'Porsche',
+  'Jaguar', 'Bentley', 'Rolls-Royce', 'Aston Martin', 'Maserati',
+  'Ferrari', 'Lamborghini', 'McLaren', 'Dodge', 'Chrysler',
+  'Cadillac', 'GMC', 'Lincoln', 'Buick', 'RAM',
+  'Lexus', 'Infiniti', 'Acura', 'Lada', 'Proton',
+  'Tata', 'Mahindra'
+];
 
 const fuelTypes = ['Essence', 'Diesel', 'GPL', 'Hybride', 'Électrique'];
 const gearboxTypes = ['Manuelle', 'Automatique'];
@@ -61,17 +61,18 @@ export default function SearchFilters({ onSearch }) {
     if (onSearch) onSearch(empty);
   };
 
-  const selectClass = "w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-accent focus:ring-2 focus:ring-orange-200 text-sm bg-white";
+  const selectClass = "w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-accent focus:ring-2 focus:ring-orange-100 text-sm bg-slate-50 focus:bg-white transition";
 
   return (
-    <div className="bg-white shadow-md rounded-xl p-5 mb-8 border border-gray-100">
-      <h2 className="text-base font-bold text-primary mb-4 flex items-center gap-2">
-        🔍 ابحث عن سيارتك
-      </h2>
+    <div className="bg-white shadow-sm rounded-2xl p-5 mb-6 border border-gray-100">
+      <div className="flex items-center gap-2 mb-4">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-accent">🔍</span>
+        <h2 className="text-base font-bold text-primary">ابحث عن سيارتك</h2>
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
         {/* Wilaya */}
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">الولاية</label>
+          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">📍 الولاية</label>
           <select name="wilaya" value={filters.wilaya} onChange={handleChange} className={selectClass}>
             <option value="">كل الولايات</option>
             {wilayat.map((w, index) => <option key={`wilaya-${index}-${w}`} value={w}>{w}</option>)}
@@ -80,7 +81,7 @@ export default function SearchFilters({ onSearch }) {
 
         {/* Brand */}
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">الماركة</label>
+          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">🏷️ الماركة</label>
           <select name="brand" value={filters.brand} onChange={handleChange} className={selectClass}>
             <option value="">كل الماركات</option>
             {brands.map(b => <option key={b} value={b}>{b}</option>)}
@@ -89,7 +90,7 @@ export default function SearchFilters({ onSearch }) {
 
         {/* Fuel */}
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">الوقود</label>
+          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">⛽ الوقود</label>
           <select name="fuelType" value={filters.fuelType} onChange={handleChange} className={selectClass}>
             <option value="">كل الأنواع</option>
             {fuelTypes.map(f => <option key={f} value={f}>{f}</option>)}
@@ -98,7 +99,7 @@ export default function SearchFilters({ onSearch }) {
 
         {/* Gearbox */}
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">ناقل الحركة</label>
+          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">⚙️ ناقل الحركة</label>
           <select name="gearbox" value={filters.gearbox} onChange={handleChange} className={selectClass}>
             <option value="">الكل</option>
             {gearboxTypes.map(g => <option key={g} value={g}>{g}</option>)}
@@ -107,7 +108,7 @@ export default function SearchFilters({ onSearch }) {
 
         {/* Min Price */}
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">السعر من (دج)</label>
+          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">💰 السعر من (دج)</label>
           <input
             type="number"
             name="minPrice"
@@ -120,7 +121,7 @@ export default function SearchFilters({ onSearch }) {
 
         {/* Max Price */}
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">السعر إلى (دج)</label>
+          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">💰 السعر إلى (دج)</label>
           <input
             type="number"
             name="maxPrice"
@@ -136,13 +137,13 @@ export default function SearchFilters({ onSearch }) {
       <div className="flex gap-3">
         <button
           onClick={handleSearch}
-          className="flex-1 bg-primary hover:bg-blue-900 text-white font-bold py-2.5 px-4 rounded-lg transition duration-300 text-sm"
+          className="flex-1 bg-accent hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-300 text-sm shadow-sm"
         >
           🔍 بحث
         </button>
         <button
           onClick={handleReset}
-          className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2.5 px-5 rounded-lg transition duration-300 text-sm"
+          className="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-2.5 px-5 rounded-lg transition duration-300 text-sm"
         >
           مسح
         </button>
