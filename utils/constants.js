@@ -12,12 +12,23 @@ export const WILAYAT = [
 ];
 
 export const BRANDS = [
-  'Renault', 'Peugeot', 'Volkswagen', 'Hyundai', 'Dacia',
-  'Toyota', 'Honda', 'Kia', 'BMW', 'Mercedes-Benz',
-  'Audi', 'Citroën', 'Opel', 'Ford', 'Chevrolet',
-  'Skoda', 'Seat', 'Fiat', 'Lada', 'Changan',
-  'MG', 'Chery', 'JAC', 'BYD', 'Geely',
-];
+    'Renault', 'Peugeot', 'Volkswagen', 'Hyundai', 'Dacia',
+    'Toyota', 'Honda', 'Kia', 'BMW', 'Mercedes-Benz',
+    'Audi', 'Citroën', 'Opel', 'Ford', 'Chevrolet',
+    'Nissan', 'Mazda', 'Suzuki', 'Mitsubishi', 'Fiat',
+    'Seat', 'Skoda', 'Jeep', 'Land Rover', 'Tesla',
+    'Chery', 'Geely', 'Great Wall (GWM)', 'Haval', 'BYD',
+    'Changan', 'JAC', 'MG', 'FAW', 'Dongfeng',
+    'GAC', 'Wuling', 'Omoda', 'Jaecoo', 'Exeed',
+    'Zotye', 'Lifan', 'Baic', 'Foton', 'SsangYong',
+    'Genesis', 'Subaru', 'Isuzu', 'Daihatsu', 'Alfa Romeo',
+    'Lancia', 'Volvo', 'Saab', 'Mini', 'Porsche',
+    'Jaguar', 'Bentley', 'Rolls-Royce', 'Aston Martin', 'Maserati',
+    'Ferrari', 'Lamborghini', 'McLaren', 'Dodge', 'Chrysler',
+    'Cadillac', 'GMC', 'Lincoln', 'Buick', 'RAM',
+    'Lexus', 'Infiniti', 'Acura', 'Lada', 'Proton',
+    'Tata', 'Mahindra',
+  ];
 
 export const FUEL_TYPES = ['Essence', 'Diesel', 'GPL'];
 export const GEARBOX_TYPES = ['Manuelle', 'Automatique'];
