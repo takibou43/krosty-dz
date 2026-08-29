@@ -12,11 +12,11 @@ export default function HomePage() {
   const [filters, setFilters] = useState({});
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(135deg,#f8fbff_0%,#fff7ed_100%)]" dir="rtl">
+    <div className="min-h-screen bg-[linear-gradient(135deg,#f5f5f5_0%,#fff3e8_100%)]" dir="rtl">
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 py-6 md:py-8">
-        <section className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6 rounded-[2rem] bg-gradient-to-br from-primary via-blue-900 to-blue-950 p-6 md:p-8 text-white shadow-2xl overflow-hidden">
+        <section className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6 rounded-[2rem] bg-gradient-to-br from-primary via-neutral-900 to-black p-6 md:p-8 text-white shadow-2xl overflow-hidden">
           <div className="space-y-5">
             <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-sm font-semibold backdrop-blur">
               🔥 أفضل منصة لبيع وشراء السيارات في الجزائر
@@ -24,7 +24,7 @@ export default function HomePage() {
             <h1 className="text-3xl md:text-5xl font-black leading-tight">
               ابحث عن سيارتك المثالية أو انشر إعلانك في دقائق
             </h1>
-            <p className="text-base md:text-lg text-blue-100 max-w-2xl">
+            <p className="text-base md:text-lg text-gray-300 max-w-2xl">
               من السيارات المستعملة إلى الموديلات الجديدة، كل ما تحتاجه في مكان واحد مع تجربة بحث سهلة وآمنة.
             </p>
             <div className="flex flex-wrap gap-3">
