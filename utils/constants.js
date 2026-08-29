@@ -65,9 +65,9 @@ export const FEATURED_PLANS = {
 };
 
 export const COLORS = {
-  primary: '#1e3a8a',
-  accent: '#ea580c',
-  background: '#f8f9fa',
+  primary: '#1c1c1c',
+  accent: '#e95903',
+  background: '#f5f5f5',
   white: '#ffffff',
   darkGray: '#333333',
   lightGray: '#d1d5db',
