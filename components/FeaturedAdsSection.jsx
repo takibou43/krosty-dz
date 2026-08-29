@@ -105,7 +105,7 @@ export default function FeaturedAdsSection({ onPlanSelect }) {
               className={`w-full font-bold py-2.5 rounded-lg text-sm transition duration-300 ${
                 plan.badge
                   ? 'bg-accent hover:bg-orange-600 text-white shadow-md'
-                  : 'bg-primary hover:bg-blue-900 text-white'
+                  : 'bg-primary hover:bg-black text-white'
               }`}
             >
               {plan.id === 'standard' ? 'انشر مجاناً' : 'ترقية الإعلان الآن'}
