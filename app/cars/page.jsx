@@ -14,12 +14,12 @@ export default function CarsPage() {
     <div className="min-h-screen bg-slate-50" dir="rtl">
       <Header />
 
-      <div className="bg-gradient-to-l from-primary to-blue-900 py-6 px-4">
+      <div className="bg-gradient-to-l from-primary to-black py-6 px-4">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-black text-white flex items-center gap-2">
             🚗 كل السيارات المعروضة للبيع
           </h1>
-          <p className="text-sm text-blue-100 mt-1">
+          <p className="text-sm text-gray-300 mt-1">
             تصفح آلاف إعلانات السيارات الحقيقية في كل ولايات الجزائر
           </p>
         </div>
