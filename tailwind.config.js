@@ -7,8 +7,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#1e3a8a', // أزرق داكن
-        accent: '#ea580c',  // برتقالي
+        primary: '#1c1c1c', // أسود داكن (بدل الأزرق) — بروح واد كنيس
+        accent: '#e95903',  // برتقالي واد كنيس
       },
       fontFamily: {
         sans: ['system-ui', 'sans-serif'],
