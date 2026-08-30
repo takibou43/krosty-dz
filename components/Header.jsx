@@ -59,7 +59,7 @@ export default function Header() {
             />
           </Link>
 
-          {/* شريط البحث */}
+          {/* شريط البحث — سطح المكتب */}
           <form onSubmit={handleSearch} className="hidden min-w-0 flex-1 md:block lg:px-6">
             <div className="relative">
               <Icon
@@ -140,6 +140,24 @@ export default function Header() {
             </button>
           </div>
         </div>
+
+        {/* شريط البحث — الجوال (سطر مستقل بعرض كامل) */}
+        <form onSubmit={handleSearch} className="pb-2.5 md:hidden">
+          <div className="relative">
+            <Icon
+              name="search"
+              className="pointer-events-none absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="أدخل بحثك هنا"
+              aria-label="بحث"
+              className="w-full rounded-md border border-line bg-slate-50 py-2.5 pr-10 pl-3 text-base text-ink transition placeholder:text-slate-400 focus:border-accent focus:bg-white focus:outline-none"
+            />
+          </div>
+        </form>
 
         {/* تنقّل ثانوي — سطح المكتب */}
         <nav className="hidden items-center gap-1 border-t border-line py-1.5 md:flex">

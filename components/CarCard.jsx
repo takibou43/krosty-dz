@@ -194,7 +194,7 @@ export default function CarCard({ car, view = 'grid' }) {
         )}
       </Link>
 
-      <FavoriteButton carId={car.id} className="absolute left-2 top-2 h-8 w-8" />
+      <FavoriteButton carId={car.id} className="absolute left-2 top-2 h-9 w-9" />
 
       <div className="flex flex-1 flex-col p-3">
         <Link href={`/cars/${car.id}`} className="min-w-0">
@@ -208,7 +208,7 @@ export default function CarCard({ car, view = 'grid' }) {
           <span className="mr-1 text-xs font-medium text-muted">دج</span>
         </p>
 
-        <div className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-line pt-2.5 text-xs">
+        <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1.5 border-t border-line pt-2.5 text-xs">
           <SpecItem icon="calendar" value={car.year} />
           <SpecItem icon="gauge" value={mileage} />
           <SpecItem icon="fuel" value={car.fuel_type} />
@@ -227,7 +227,7 @@ export default function CarCard({ car, view = 'grid' }) {
       {car.phone_number && (
         <a
           href={`tel:${car.phone_number}`}
-          className="flex items-center justify-center gap-2 border-t border-line py-2.5 text-xs font-semibold text-ink transition hover:bg-slate-50 hover:text-accent"
+          className="flex items-center justify-center gap-2 border-t border-line py-3 text-xs font-semibold text-ink transition hover:bg-slate-50 hover:text-accent"
         >
           <Icon name="phone" className="h-3.5 w-3.5" />
           اتصال بالبائع

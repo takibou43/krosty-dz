@@ -26,7 +26,7 @@ export const emptyCarForm = {
 };
 
 const inputClass =
-  'w-full rounded-md border border-line bg-white px-3 py-2.5 text-sm text-ink transition placeholder:text-slate-400 hover:border-slate-300 focus:border-accent focus:outline-none';
+  'w-full rounded-md border border-line bg-white px-3 py-2.5 text-base text-ink md:text-sm transition placeholder:text-slate-400 hover:border-slate-300 focus:border-accent focus:outline-none';
 
 function Field({ label, required, children, hint }) {
   return (

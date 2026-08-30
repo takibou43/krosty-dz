@@ -11,7 +11,7 @@ const gearboxTypes = ['Manuelle', 'Automatique'];
 const EMPTY = { wilaya: '', brand: '', model: '', fuelType: '', gearbox: '', minPrice: '', maxPrice: '' };
 
 const fieldClass =
-  'w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink transition placeholder:text-slate-400 hover:border-slate-300 focus:border-accent focus:outline-none';
+  'w-full rounded-md border border-line bg-white px-3 py-2.5 text-base text-ink transition placeholder:text-slate-400 hover:border-slate-300 focus:border-accent focus:outline-none md:py-2 md:text-sm';
 
 function Field({ label, children }) {
   return (
@@ -24,6 +24,8 @@ function Field({ label, children }) {
 
 export default function SearchFilters({ onSearch }) {
   const [filters, setFilters] = useState(EMPTY);
+  // على الجوال تبقى اللوحة مطويّة حتى لا تدفع الإعلانات خارج الشاشة
+  const [open, setOpen] = useState(false);
 
   const activeCount = Object.values(filters).filter(Boolean).length;
 
@@ -39,6 +41,7 @@ export default function SearchFilters({ onSearch }) {
 
   const handleSearch = () => {
     if (onSearch) onSearch(filters);
+    setOpen(false); // على الجوال نطوي اللوحة لتظهر النتائج مباشرة
   };
 
   const handleReset = () => {
@@ -52,20 +55,44 @@ export default function SearchFilters({ onSearch }) {
         <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
           <Icon name="search" className="h-4 w-4 text-accent" />
           ابحث عن سيارتك
+          {activeCount > 0 && (
+            <span className="rounded-full bg-accent px-1.5 py-0.5 text-2xs font-semibold text-white nums">
+              {activeCount}
+            </span>
+          )}
         </h2>
-        {activeCount > 0 && (
+
+        <div className="flex items-center gap-3">
+          {activeCount > 0 && (
+            <button
+              type="button"
+              onClick={handleReset}
+              className="inline-flex items-center gap-1 text-xs font-medium text-muted transition hover:text-accent"
+            >
+              <Icon name="close" className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">مسح الفلاتر</span>
+              <span className="sm:hidden">مسح</span>
+            </button>
+          )}
+
+          {/* زر الطيّ — الجوال فقط */}
           <button
             type="button"
-            onClick={handleReset}
-            className="inline-flex items-center gap-1 text-xs font-medium text-muted transition hover:text-accent"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-accent md:hidden"
           >
-            <Icon name="close" className="h-3.5 w-3.5" />
-            مسح الفلاتر ({activeCount})
+            {open ? 'إخفاء الفلاتر' : 'الفلاتر'}
+            <Icon
+              name="chevronDown"
+              className={`h-3.5 w-3.5 transition ${open ? 'rotate-180' : ''}`}
+              strokeWidth={2}
+            />
           </button>
-        )}
+        </div>
       </div>
 
-      <div className="p-4">
+      <div className={`${open ? 'block' : 'hidden'} p-4 md:block`}>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
           <Field label="الولاية">
             <select name="wilaya" value={filters.wilaya} onChange={handleChange} className={fieldClass}>

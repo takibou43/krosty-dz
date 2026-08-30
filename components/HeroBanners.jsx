@@ -10,7 +10,7 @@ export default function HeroBanners() {
       {/* البانر الجانبي */}
       <Link
         href="/add"
-        className="group relative flex min-h-[180px] flex-col justify-between overflow-hidden rounded-card border border-line bg-white p-5 shadow-card transition hover:border-slate-300 hover:shadow-pop"
+        className="group relative order-2 flex min-h-[180px] flex-col justify-between overflow-hidden rounded-card border border-line bg-white p-5 shadow-card transition hover:border-slate-300 hover:shadow-pop lg:order-none"
       >
         <div>
           <span className="inline-flex items-center gap-1.5 rounded bg-accent/10 px-2 py-1 text-2xs font-semibold text-accent">
@@ -40,7 +40,7 @@ export default function HeroBanners() {
       </Link>
 
       {/* البانر الرئيسي */}
-      <div className="relative flex min-h-[180px] flex-col justify-between overflow-hidden rounded-card border border-line bg-primary p-6 text-white shadow-card">
+      <div className="relative order-1 flex min-h-[180px] flex-col justify-between overflow-hidden rounded-card border border-line bg-primary p-5 text-white shadow-card sm:p-6 lg:order-none">
         <div
           className="pointer-events-none absolute inset-0 opacity-25"
           style={{
