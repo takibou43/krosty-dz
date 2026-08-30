@@ -17,7 +17,7 @@ export default function SignupPage() {
   const [success, setSuccess] = useState(false);
 
   const inputClass =
-    'w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-orange-200 bg-white text-gray-900';
+    'w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-red-200 bg-white text-gray-900';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,7 +57,7 @@ export default function SignupPage() {
           <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-700 text-center">
             <p className="font-bold mb-2">تم إنشاء حسابك بنجاح 🎉</p>
             <p className="mb-4">إذا طُلب منك تأكيد بريدك الإلكتروني، تحقق من صندوق الوارد قبل تسجيل الدخول.</p>
-            <Link href="/login" className="inline-block bg-accent hover:bg-orange-700 text-white font-bold py-2.5 px-5 rounded-lg transition">
+            <Link href="/login" className="inline-block bg-accent hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-lg transition">
               تسجيل الدخول الآن
             </Link>
           </div>
@@ -106,7 +106,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-accent hover:bg-orange-700 disabled:opacity-60 text-white font-bold py-3 rounded-lg transition duration-300 text-base shadow"
+                className="w-full bg-accent hover:bg-red-700 disabled:opacity-60 text-white font-bold py-3 rounded-lg transition duration-300 text-base shadow"
               >
                 {loading ? 'جاري إنشاء الحساب...' : 'إنشاء الحساب'}
               </button>
