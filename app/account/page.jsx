@@ -8,6 +8,7 @@ import PageHeader from '@/components/PageHeader';
 import CarCard from '@/components/CarCard';
 import Icon from '@/components/Icon';
 import { useAuth } from '@/utils/useAuth';
+import { publishCarToFacebook } from '@/utils/facebook';
 import {
   getMyCars,
   deleteCar,
@@ -23,6 +24,8 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [renewingId, setRenewingId] = useState(null);
+  const [sharingId, setSharingId] = useState(null);
+  const [shareResult, setShareResult] = useState({});
 
   const loadCars = async (userId) => {
     setLoading(true);
@@ -55,6 +58,18 @@ export default function AccountPage() {
       setCars((prev) => prev.map((c) => (c.id === carId ? { ...c, ...updated } : c)));
     }
     setRenewingId(null);
+  };
+
+  const handleShare = async (carId) => {
+    setSharingId(carId);
+    setShareResult((prev) => ({ ...prev, [carId]: null }));
+    const res = await publishCarToFacebook(carId);
+    let msg;
+    if (res?.ok) msg = { ok: true, text: 'تم النشر على صفحة فيسبوك' };
+    else if (res?.skipped === 'facebook_not_configured') msg = { ok: false, text: 'ربط فيسبوك غير مُفعَّل بعد' };
+    else msg = { ok: false, text: res?.detail ? `تعذّر النشر: ${res.detail}` : 'تعذّر النشر على فيسبوك' };
+    setShareResult((prev) => ({ ...prev, [carId]: msg }));
+    setSharingId(null);
   };
 
   return (
@@ -197,6 +212,29 @@ export default function AccountPage() {
                           {deletingId === car.id ? '...' : ''}
                         </button>
                       </div>
+
+                      {/* نشر يدوي على صفحة فيسبوك — احتياطي إن فشل النشر التلقائي */}
+                      <button
+                        type="button"
+                        onClick={() => handleShare(car.id)}
+                        disabled={sharingId === car.id}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-md border border-line py-2 text-xs font-medium text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-ink disabled:opacity-50"
+                      >
+                        <Icon name="facebook" className="h-3.5 w-3.5" filled />
+                        {sharingId === car.id ? 'جاري النشر...' : 'نشر على فيسبوك'}
+                      </button>
+
+                      {shareResult[car.id] && (
+                        <p
+                          className={`rounded-md px-2.5 py-1.5 text-2xs font-medium ${
+                            shareResult[car.id].ok
+                              ? 'bg-emerald-50 text-emerald-800'
+                              : 'bg-amber-50 text-amber-800'
+                          }`}
+                        >
+                          {shareResult[car.id].text}
+                        </p>
+                      )}
                     </div>
                   );
                 })}
