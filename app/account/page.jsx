@@ -54,7 +54,7 @@ export default function AccountPage() {
       <main className="max-w-7xl mx-auto px-4 py-6 md:py-8">
         {authLoading && (
           <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-600 mb-4"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600 mb-4"></div>
           </div>
         )}
 
@@ -62,7 +62,7 @@ export default function AccountPage() {
           <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
             <div className="text-5xl mb-3">🔒</div>
             <p className="font-semibold text-gray-800">يجب تسجيل الدخول لعرض حسابك</p>
-            <Link href="/login" className="mt-4 inline-block bg-accent hover:bg-orange-700 text-white font-bold py-2.5 px-5 rounded-lg transition">
+            <Link href="/login" className="mt-4 inline-block bg-accent hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-lg transition">
               تسجيل الدخول
             </Link>
           </div>
@@ -77,7 +77,7 @@ export default function AccountPage() {
 
             {loading && (
               <div className="flex flex-col items-center justify-center py-16 text-gray-500">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-600 mb-4"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600 mb-4"></div>
                 <p className="text-sm font-medium">جاري تحميل إعلاناتك...</p>
               </div>
             )}
