@@ -22,12 +22,20 @@ export default function CarsPage() {
     const cat = params.get('category') || '';
     setKeyword(q);
     setCategory(cat);
-    if (q) setFilters((prev) => ({ ...prev, keyword: q }));
+    setFilters((prev) => ({
+      ...prev,
+      ...(q ? { keyword: q } : {}),
+      ...(cat ? { category: cat } : {}),
+    }));
   }, []);
 
   const handleSearch = (next) => {
-    // البحث النصي من الهيدر يبقى فعّالاً مع فلاتر اللوحة
-    setFilters(keyword ? { ...next, keyword } : next);
+    // البحث النصي والقسم يبقيان فعّالين مع فلاتر اللوحة
+    setFilters({
+      ...next,
+      ...(keyword ? { keyword } : {}),
+      ...(category ? { category } : {}),
+    });
   };
 
   const clearKeyword = () => {
