@@ -104,7 +104,7 @@ export default function AddCarPage() {
   };
 
   const inputClass =
-    'w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-orange-200 bg-white text-gray-900';
+    'w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-red-200 bg-white text-gray-900';
 
   return (
     <div className="min-h-screen bg-slate-50" dir="rtl">
@@ -121,7 +121,7 @@ export default function AddCarPage() {
         )}
 
         {!user && (
-          <div className="mb-4 rounded-lg border border-orange-200 bg-orange-50 p-3 text-xs text-orange-700">
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
             💡 لست مسجلاً الدخول — يمكنك نشر الإعلان كزائر، لكن لن يظهر في صفحة "حسابي" لاحقاً.{' '}
             <Link href="/login" className="font-bold underline">سجّل الدخول</Link> لإدارة إعلاناتك بسهولة.
           </div>
@@ -274,7 +274,7 @@ export default function AddCarPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-accent hover:bg-orange-700 disabled:opacity-60 text-white font-bold py-3 rounded-lg transition duration-300 text-base shadow"
+            className="w-full bg-accent hover:bg-red-700 disabled:opacity-60 text-white font-bold py-3 rounded-lg transition duration-300 text-base shadow"
           >
             {loading ? (uploadingLabel || 'جاري النشر...') : '🚀 نشر الإعلان الآن'}
           </button>
