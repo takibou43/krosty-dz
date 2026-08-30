@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -17,6 +17,14 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [redirectTo, setRedirectTo] = useState('/account');
+
+  useEffect(() => {
+    const target = new URLSearchParams(window.location.search).get('redirect');
+    if (target && target.startsWith('/') && !target.startsWith('//')) {
+      setRedirectTo(target);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,7 +76,7 @@ export default function SignupPage() {
                 إذا طُلب منك تأكيد بريدك الإلكتروني، تحقّق من صندوق الوارد قبل تسجيل الدخول.
               </p>
               <Link
-                href="/login"
+                href={`/login?redirect=${encodeURIComponent(redirectTo)}`}
                 className="mt-5 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-dark"
               >
                 تسجيل الدخول الآن
@@ -136,7 +144,10 @@ export default function SignupPage() {
 
               <div className="border-t border-line px-6 py-4 text-center text-xs text-muted">
                 لديك حساب بالفعل؟{' '}
-                <Link href="/login" className="font-semibold text-accent hover:underline">
+                <Link
+                  href={`/login${redirectTo !== '/account' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`}
+                  className="font-semibold text-accent hover:underline"
+                >
                   تسجيل الدخول
                 </Link>
               </div>
