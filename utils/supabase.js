@@ -13,6 +13,9 @@ function getClient() {
   return supabase;
 }
 
+// أقصى عدد إعلانات نشطة لكل مستخدم — حماية من الإغراق
+export const MAX_ACTIVE_ADS = 20;
+
 // مدة عرض الإعلان قبل أن يُخفى تلقائياً
 export const AD_DURATION_DAYS = 3;
 // بعد الانتهاء يبقى الإعلان في «حسابي» هذه المدة ثم يُحذف نهائياً
@@ -50,6 +53,7 @@ export async function getCars(filters = {}) {
     if (filters.wilaya) query = query.eq('wilaya', filters.wilaya);
     if (filters.brand) query = query.eq('brand', filters.brand);
     if (filters.model) query = query.eq('model', filters.model);
+    if (filters.category) query = query.eq('category', filters.category);
     if (filters.keyword) {
       const k = String(filters.keyword).replace(/[%,()]/g, ' ').trim();
       if (k) {
@@ -83,13 +87,74 @@ export async function getMyCars(userId) {
   } catch { return []; }
 }
 
+// يستخرج مسار الملف داخل bucket من رابطه العام
+function storagePathFromUrl(url) {
+  const marker = '/storage/v1/object/public/car-images/';
+  const i = String(url).indexOf(marker);
+  return i === -1 ? null : decodeURIComponent(String(url).slice(i + marker.length));
+}
+
+// يحذف صور الإعلان من التخزين حتى لا تتراكم ملفات يتيمة
+export async function deleteCarImages(images) {
+  const client = getClient();
+  if (!client || !Array.isArray(images) || images.length === 0) return;
+  const paths = images.map(storagePathFromUrl).filter(Boolean);
+  if (paths.length === 0) return;
+  try {
+    await client.storage.from('car-images').remove(paths);
+  } catch {
+    // فشل حذف الصور لا يمنع حذف الإعلان
+  }
+}
+
 export async function deleteCar(id) {
   const client = getClient();
   if (!client || !id) return false;
   try {
+    // اجلب الصور أولاً لحذفها من التخزين
+    const { data: car } = await client.from('cars').select('images').eq('id', id).single();
     const { error } = await client.from('cars').delete().eq('id', id);
-    return !error;
+    if (error) return false;
+    await deleteCarImages(car?.images);
+    return true;
   } catch { return false; }
+}
+
+// تعديل الإعلان — يحذف الصور التي أزالها صاحبه
+export async function updateCar(id, carData) {
+  const client = getClient();
+  if (!client || !id) return null;
+  try {
+    const { data: before } = await client.from('cars').select('images').eq('id', id).single();
+
+    const { data, error } = await client
+      .from('cars')
+      .update(carData)
+      .eq('id', id)
+      .select();
+    if (error) return null;
+
+    const kept = new Set(Array.isArray(carData.images) ? carData.images : []);
+    const removed = (before?.images || []).filter((u) => !kept.has(u));
+    await deleteCarImages(removed);
+
+    return data?.[0] || null;
+  } catch { return null; }
+}
+
+// عدد الإعلانات النشطة لمستخدم
+export async function countActiveCars(userId) {
+  const client = getClient();
+  if (!client || !userId) return 0;
+  try {
+    const { count, error } = await client
+      .from('cars')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .gt('expires_at', new Date().toISOString());
+    if (error) return 0;
+    return count || 0;
+  } catch { return 0; }
 }
 
 // تجديد الإعلان: يمدّد تاريخ الانتهاء من الآن
@@ -232,6 +297,28 @@ export async function signUp(email, password, userData = {}) {
     if (error) return null;
     return data.user;
   } catch { return null; }
+}
+
+// إرسال رابط استرجاع كلمة المرور إلى البريد
+export async function requestPasswordReset(email) {
+  const client = getClient();
+  if (!client || !email) return false;
+  try {
+    const redirectTo =
+      typeof window !== 'undefined' ? `${window.location.origin}/update-password` : undefined;
+    const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo });
+    return !error;
+  } catch { return false; }
+}
+
+// تعيين كلمة مرور جديدة (بعد فتح الرابط من البريد)
+export async function updatePassword(newPassword) {
+  const client = getClient();
+  if (!client || !newPassword) return false;
+  try {
+    const { error } = await client.auth.updateUser({ password: newPassword });
+    return !error;
+  } catch { return false; }
 }
 
 export async function signOut() {
