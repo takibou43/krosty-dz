@@ -49,7 +49,7 @@ export default function FavoritesPage() {
       <main className="max-w-7xl mx-auto px-4 py-6 md:py-8">
         {loading && (
           <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-600 mb-4"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600 mb-4"></div>
             <p className="text-sm font-medium">جاري تحميل المفضلة...</p>
           </div>
         )}
@@ -59,7 +59,7 @@ export default function FavoritesPage() {
             <div className="text-5xl mb-3">🤍</div>
             <p className="font-semibold text-gray-800">لا توجد سيارات في المفضلة بعد</p>
             <p className="text-sm text-gray-500 mt-1 mb-4">اضغط على أيقونة القلب في أي إعلان لإضافته هنا</p>
-            <a href="/cars" className="inline-block bg-accent hover:bg-orange-700 text-white font-bold py-2.5 px-5 rounded-lg transition">
+            <a href="/cars" className="inline-block bg-accent hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-lg transition">
               تصفح السيارات
             </a>
           </div>
