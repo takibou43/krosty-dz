@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -17,6 +17,16 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [redirectTo, setRedirectTo] = useState('/account');
+
+  // نقرأ وجهة العودة من الرابط مباشرة (بدل useSearchParams الذي يتطلب Suspense)
+  useEffect(() => {
+    const target = new URLSearchParams(window.location.search).get('redirect');
+    // نقبل المسارات الداخلية فقط، منعاً لإعادة التوجيه إلى موقع خارجي
+    if (target && target.startsWith('/') && !target.startsWith('//')) {
+      setRedirectTo(target);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +46,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push('/account');
+    router.push(redirectTo);
   };
 
   return (
@@ -100,7 +110,10 @@ export default function LoginPage() {
 
           <div className="border-t border-line px-6 py-4 text-center text-xs text-muted">
             ليس لديك حساب؟{' '}
-            <Link href="/signup" className="font-semibold text-accent hover:underline">
+            <Link
+              href={`/signup${redirectTo !== '/account' ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`}
+              className="font-semibold text-accent hover:underline"
+            >
               أنشئ حساباً جديداً
             </Link>
           </div>
