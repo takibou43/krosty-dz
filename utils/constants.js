@@ -66,7 +66,7 @@ export const FEATURED_PLANS = {
 
 export const COLORS = {
   primary: '#1c1c1c',
-  accent: '#e95903',
+  accent: '#e8141c',
   background: '#f5f5f5',
   white: '#ffffff',
   darkGray: '#333333',
