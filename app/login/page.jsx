@@ -99,6 +99,12 @@ export default function LoginPage() {
               />
             </label>
 
+            <div className="text-left">
+              <Link href="/reset-password" className="text-2xs font-medium text-muted transition hover:text-accent">
+                نسيت كلمة المرور؟
+              </Link>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
