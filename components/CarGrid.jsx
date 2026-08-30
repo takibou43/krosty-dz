@@ -88,6 +88,7 @@ export default function CarGrid({
           wilaya: filters.wilaya,
           brand: filters.brand,
           model: filters.model,
+          category: filters.category,
           keyword: filters.keyword,
           fuelType: filters.fuelType,
           gearbox: filters.gearbox,
