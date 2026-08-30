@@ -2,6 +2,67 @@
 // الاستخدام: <Icon name="car" className="h-4 w-4" />
 
 const PATHS = {
+  van: (
+    <>
+      <path d="M3 16V8a1 1 0 0 1 1-1h9v9M13 11h4.2a2 2 0 0 1 1.6.8L21 15v1M3 16h1.5M10 16h5m4.5 0H21" />
+      <circle cx="7" cy="17" r="1.8" />
+      <circle cx="17" cy="17" r="1.8" />
+    </>
+  ),
+  motorcycle: (
+    <>
+      <circle cx="5.5" cy="16.5" r="3.2" />
+      <circle cx="18.5" cy="16.5" r="3.2" />
+      <path d="M5.5 16.5h4l4-7.5h3M15 9h3.5l1.5 4.5M9 9h4" />
+    </>
+  ),
+  quad: (
+    <>
+      <circle cx="5" cy="16.5" r="3" />
+      <circle cx="19" cy="16.5" r="3" />
+      <path d="M5 16.5h3l2-6h6l2 6h1M9 10.5V8h4" />
+    </>
+  ),
+  truck: (
+    <>
+      <path d="M2.5 16V7a1 1 0 0 1 1-1h9.5v10M13 10h3.6a2 2 0 0 1 1.7 1l2 3.2V16M2.5 16H4m5.5 0h5.5m4 0h1.5" />
+      <circle cx="6.8" cy="17.2" r="1.9" />
+      <circle cx="17.2" cy="17.2" r="1.9" />
+    </>
+  ),
+  bus: (
+    <>
+      <rect x="3.5" y="4" width="17" height="13" rx="2" />
+      <path d="M3.5 9.5h17M3.5 13h17M8 4v5.5M16 4v5.5M7 17v2M17 17v2" />
+    </>
+  ),
+  machinery: (
+    <>
+      <path d="M3 18h11v-4H3zM6 14V9h4l3 5M13 9l5-4v9" />
+      <circle cx="6" cy="19.5" r="1.6" />
+      <circle cx="11.5" cy="19.5" r="1.6" />
+    </>
+  ),
+  tractor: (
+    <>
+      <circle cx="7" cy="16" r="4" />
+      <circle cx="18" cy="17" r="2.8" />
+      <path d="M7 12V7h4l2 5h5M11 7h4" />
+    </>
+  ),
+  trailer: (
+    <>
+      <path d="M2.5 15V7.5a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1V15M2.5 15h3m4 0h11M17.5 15h4" />
+      <circle cx="7.2" cy="16.5" r="1.7" />
+    </>
+  ),
+  cart: (
+    <>
+      <path d="M3 4h2.2l2.3 10.4a1.5 1.5 0 0 0 1.5 1.2h7.6a1.5 1.5 0 0 0 1.5-1.2L20 8H6" />
+      <circle cx="9.5" cy="19" r="1.4" />
+      <circle cx="17" cy="19" r="1.4" />
+    </>
+  ),
   car: (
     <>
       <path d="M5 17h14M6.5 17a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm14 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />

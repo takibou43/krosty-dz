@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import Icon from './Icon';
 import { WILAYAT, BRANDS } from '@/utils/constants';
+import { getModelsForBrand } from '@/utils/carModels';
 
 const fuelTypes = ['Essence', 'Diesel', 'GPL', 'Hybride', 'Électrique'];
 const gearboxTypes = ['Manuelle', 'Automatique'];
 
-const EMPTY = { wilaya: '', brand: '', fuelType: '', gearbox: '', minPrice: '', maxPrice: '' };
+const EMPTY = { wilaya: '', brand: '', model: '', fuelType: '', gearbox: '', minPrice: '', maxPrice: '' };
 
 const fieldClass =
   'w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink transition placeholder:text-slate-400 hover:border-slate-300 focus:border-accent focus:outline-none';
@@ -26,9 +27,14 @@ export default function SearchFilters({ onSearch }) {
 
   const activeCount = Object.values(filters).filter(Boolean).length;
 
+  const models = getModelsForBrand(filters.brand);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
+    // تغيير الماركة يُصفّر الموديل
+    setFilters((prev) =>
+      name === 'brand' ? { ...prev, brand: value, model: '' } : { ...prev, [name]: value }
+    );
   };
 
   const handleSearch = () => {
@@ -60,7 +66,7 @@ export default function SearchFilters({ onSearch }) {
       </div>
 
       <div className="p-4">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
           <Field label="الولاية">
             <select name="wilaya" value={filters.wilaya} onChange={handleChange} className={fieldClass}>
               <option value="">كل الولايات</option>
@@ -80,6 +86,24 @@ export default function SearchFilters({ onSearch }) {
                   {b}
                 </option>
               ))}
+            </select>
+          </Field>
+
+          <Field label="الموديل">
+            <select
+              name="model"
+              value={filters.model}
+              onChange={handleChange}
+              disabled={!filters.brand}
+              className={`${fieldClass} disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400`}
+            >
+              <option value="">{filters.brand ? 'كل الموديلات' : 'اختر الماركة أولاً'}</option>
+              {filters.brand &&
+                models.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
             </select>
           </Field>
 

@@ -53,7 +53,19 @@ function SkeletonCard() {
   );
 }
 
-export default function CarGrid({ filters = {} }) {
+// أعمدة الشبكة حسب الكثافة المطلوبة
+const GRID_COLS = {
+  4: 'grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4',
+  5: 'grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5',
+  6: 'grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6',
+};
+
+export default function CarGrid({
+  filters = {},
+  columns = 4,
+  showToolbar = true,
+  limit = null,
+}) {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,6 +87,8 @@ export default function CarGrid({ filters = {} }) {
         const data = await getCars({
           wilaya: filters.wilaya,
           brand: filters.brand,
+          model: filters.model,
+          keyword: filters.keyword,
           fuelType: filters.fuelType,
           gearbox: filters.gearbox,
           minPrice: filters.minPrice,
@@ -94,14 +108,21 @@ export default function CarGrid({ filters = {} }) {
     fetchCars();
   }, [filters]);
 
+  const gridClass = GRID_COLS[columns] || GRID_COLS[4];
+
   const sortedCars = useMemo(() => sortCars(cars, sortBy), [cars, sortBy]);
-  const totalPages = Math.ceil(sortedCars.length / CARS_PER_PAGE);
-  const paginatedCars = sortedCars.slice((currentPage - 1) * CARS_PER_PAGE, currentPage * CARS_PER_PAGE);
+
+  // في الوضع المختصر (الصفحة الرئيسية) نعرض عدداً محدوداً بلا ترقيم صفحات
+  const limited = limit ? sortedCars.slice(0, limit) : sortedCars;
+  const totalPages = limit ? 0 : Math.ceil(sortedCars.length / CARS_PER_PAGE);
+  const paginatedCars = limit
+    ? limited
+    : sortedCars.slice((currentPage - 1) * CARS_PER_PAGE, currentPage * CARS_PER_PAGE);
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, i) => (
+      <div className={GRID_COLS[columns] || GRID_COLS[4]}>
+        {Array.from({ length: columns >= 6 ? 12 : 8 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
       </div>
@@ -120,6 +141,7 @@ export default function CarGrid({ filters = {} }) {
   return (
     <div dir="rtl">
       {/* شريط الأدوات */}
+      {showToolbar && (
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
         <p className="text-sm text-muted">
           <span className="font-semibold text-ink nums">{cars.length}</span> إعلان متاح
@@ -165,11 +187,12 @@ export default function CarGrid({ filters = {} }) {
           </div>
         </div>
       </div>
+      )}
 
       {/* النتائج */}
       {paginatedCars.length > 0 ? (
         viewMode === 'grid' ? (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+          <div className={gridClass}>
             {paginatedCars.map((car) => (
               <CarCard key={car.id} car={car} view="grid" />
             ))}

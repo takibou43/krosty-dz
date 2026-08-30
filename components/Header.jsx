@@ -18,9 +18,16 @@ const NAV_LINKS = [
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [favCount, setFavCount] = useState(0);
+  const [query, setQuery] = useState('');
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = query.trim();
+    router.push(q ? `/cars?q=${encodeURIComponent(q)}` : '/cars');
+  };
 
   useEffect(() => {
     setFavCount(getFavoritesCount());
@@ -52,22 +59,23 @@ export default function Header() {
             />
           </Link>
 
-          {/* التنقل - سطح المكتب */}
-          <nav className="hidden items-center gap-1 md:flex">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`rounded-md px-3 py-2 text-sm font-medium transition ${
-                  isActive(link.href)
-                    ? 'text-accent'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-ink'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          {/* شريط البحث */}
+          <form onSubmit={handleSearch} className="hidden min-w-0 flex-1 md:block lg:px-6">
+            <div className="relative">
+              <Icon
+                name="search"
+                className="pointer-events-none absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400"
+              />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="أدخل بحثك هنا"
+                aria-label="بحث"
+                className="w-full rounded-md border border-line bg-slate-50 py-2.5 pr-10 pl-3 text-sm text-ink transition placeholder:text-slate-400 hover:border-slate-300 focus:border-accent focus:bg-white focus:outline-none"
+              />
+            </div>
+          </form>
 
           {/* الإجراءات */}
           <div className="flex items-center gap-1.5">
@@ -132,6 +140,23 @@ export default function Header() {
             </button>
           </div>
         </div>
+
+        {/* تنقّل ثانوي — سطح المكتب */}
+        <nav className="hidden items-center gap-1 border-t border-line py-1.5 md:flex">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`rounded px-2.5 py-1.5 text-xs font-medium transition ${
+                isActive(link.href)
+                  ? 'text-accent'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-ink'
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
 
         {/* قائمة الجوال */}
         {menuOpen && (
