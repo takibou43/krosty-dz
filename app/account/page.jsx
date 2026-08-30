@@ -178,6 +178,14 @@ export default function AccountPage() {
                           {renewingId === car.id ? 'جاري التجديد...' : `تجديد ${AD_DURATION_DAYS} أيام`}
                         </button>
 
+                        <Link
+                          href={`/cars/${car.id}/edit`}
+                          aria-label="تعديل الإعلان"
+                          className="inline-flex items-center justify-center rounded-md border border-line px-3 py-2 text-xs font-medium text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-ink"
+                        >
+                          <Icon name="edit" className="h-3.5 w-3.5" />
+                        </Link>
+
                         <button
                           type="button"
                           onClick={() => handleDelete(car.id)}
