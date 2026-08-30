@@ -7,8 +7,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#1c1c1c', // أسود داكن (بدل الأزرق) — بروح واد كنيس
-        accent: '#e95903',  // برتقالي واد كنيس
+        primary: '#1c1c1c', // أسود داكن يطابق خلفية اللوغو
+        accent: '#e8141c',  // أحمر مطابق للوغو Crosty
       },
       fontFamily: {
         sans: ['system-ui', 'sans-serif'],
