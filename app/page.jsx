@@ -1,22 +1,32 @@
 'use client';
 
+import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CarGrid from '@/components/CarGrid';
+import Icon from '@/components/Icon';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[linear-gradient(135deg,#f5f5f5_0%,#fff3e8_100%)]" dir="rtl">
+    <div className="flex min-h-screen flex-col bg-canvas" dir="rtl">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 py-6 md:py-8">
-        <div className="flex justify-end mb-6">
-          <a
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-ink md:text-2xl">السيارات المعروضة للبيع</h1>
+            <p className="mt-1 text-sm text-muted">
+              إعلانات حقيقية من بائعين في كل ولايات الجزائر
+            </p>
+          </div>
+
+          <Link
             href="/add"
-            className="inline-flex items-center gap-2 rounded-full bg-transparent border-2 border-accent px-6 py-3 font-bold text-accent hover:bg-accent hover:text-white transition duration-300"
+            className="inline-flex items-center gap-2 rounded-md border border-ink bg-white px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-ink hover:text-white"
           >
-            <span className="text-lg leading-none">+</span> أضف إعلانك
-          </a>
+            <Icon name="plus" className="h-4 w-4" strokeWidth={2.2} />
+            أضف إعلانك
+          </Link>
         </div>
 
         <CarGrid filters={{}} />
