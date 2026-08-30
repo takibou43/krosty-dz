@@ -107,47 +107,66 @@ async function uploadUnpublishedPhoto(imageUrl) {
   return json.id;
 }
 
+// منشور نصي مع رابط الإعلان — يعمل دائماً ولا يحتاج صوراً
+async function postTextWithLink(car, message) {
+  const res = await fetch(`${GRAPH}/${PAGE_ID}/feed`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      message,
+      link: `${SITE_URL}/cars/${car.id}`,
+      access_token: PAGE_TOKEN,
+    }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json?.error?.message || 'فشل النشر');
+  return json.id;
+}
+
 async function publish(car, message) {
   const images = Array.isArray(car.images) ? car.images.filter(Boolean).slice(0, 10) : [];
 
   // بلا صور: منشور نصي مع رابط الإعلان
-  if (images.length === 0) {
-    const res = await fetch(`${GRAPH}/${PAGE_ID}/feed`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        message,
-        link: `${SITE_URL}/cars/${car.id}`,
-        access_token: PAGE_TOKEN,
-      }),
-    });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json?.error?.message || 'فشل النشر');
-    return json.id;
-  }
+  if (images.length === 0) return postTextWithLink(car, message);
 
-  // صورة واحدة: منشور صورة مباشر
+  // صورة واحدة: منشور صورة مباشر — وعند الفشل نكتفي بمنشور نصي
   if (images.length === 1) {
-    const res = await fetch(`${GRAPH}/${PAGE_ID}/photos`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ url: images[0], caption: message, access_token: PAGE_TOKEN }),
-    });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json?.error?.message || 'فشل نشر الصورة');
-    return json.post_id || json.id;
+    try {
+      const res = await fetch(`${GRAPH}/${PAGE_ID}/photos`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ url: images[0], caption: message, access_token: PAGE_TOKEN }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error?.message || 'فشل نشر الصورة');
+      return json.post_id || json.id;
+    } catch (err) {
+      console.error('[facebook] تعذّر نشر الصورة، سنكتفي بمنشور نصي:', err?.message);
+      return postTextWithLink(car, message);
+    }
   }
 
   // عدة صور: ارفعها غير منشورة ثم اجمعها في منشور واحد
   const mediaIds = [];
+  const failures = [];
   for (const url of images) {
     try {
       mediaIds.push(await uploadUnpublishedPhoto(url));
-    } catch {
-      // تجاهل الصورة التي فشلت وواصل بالبقية
+    } catch (err) {
+      // تجاهل الصورة التي فشلت وواصل بالبقية — مع تسجيل السبب الحقيقي
+      failures.push(err?.message || 'سبب غير معروف');
     }
   }
-  if (mediaIds.length === 0) throw new Error('فشل رفع كل الصور');
+
+  if (failures.length) {
+    console.error('[facebook] صور فشل رفعها:', failures.join(' | '));
+  }
+
+  // لم تُرفع أي صورة: لا نُسقط المنشور، ننشره نصاً مع الرابط
+  if (mediaIds.length === 0) {
+    console.error('[facebook] تعذّر رفع كل الصور — سنكتفي بمنشور نصي مع الرابط');
+    return postTextWithLink(car, message);
+  }
 
   const res = await fetch(`${GRAPH}/${PAGE_ID}/feed`, {
     method: 'POST',
@@ -227,6 +246,9 @@ export async function POST(request) {
   } catch (err) {
     // فشل فيسبوك لا يعني فشل الإعلان — نسجّله ونرجع بهدوء
     console.error('[facebook] فشل النشر:', err?.message);
-    return Response.json({ ok: false, error: 'facebook_post_failed' }, { status: 200 });
+    return Response.json(
+      { ok: false, error: 'facebook_post_failed', detail: err?.message || null },
+      { status: 200 }
+    );
   }
 }
