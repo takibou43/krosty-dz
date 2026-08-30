@@ -13,7 +13,7 @@ export default function ContactPage() {
   };
 
   const inputClass =
-    'w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-orange-200 bg-white text-gray-900';
+    'w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-red-200 bg-white text-gray-900';
 
   return (
     <div className="min-h-screen bg-slate-50" dir="rtl">
@@ -50,7 +50,7 @@ export default function ContactPage() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-accent hover:bg-orange-700 text-white font-bold py-3 rounded-lg transition text-base shadow"
+                className="w-full bg-accent hover:bg-red-700 text-white font-bold py-3 rounded-lg transition text-base shadow"
               >
                 إرسال الرسالة
               </button>
