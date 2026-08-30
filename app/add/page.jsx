@@ -7,8 +7,10 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PageHeader from '@/components/PageHeader';
 import Icon from '@/components/Icon';
-import { addCar, isSupabaseConfigured, uploadCarImages } from '@/utils/supabase';
+import { addCar, isSupabaseConfigured, uploadCarImages, AD_DURATION_DAYS } from '@/utils/supabase';
 import { WILAYAT, BRANDS, FUEL_TYPES, GEARBOX_TYPES, DOCUMENTS_STATUS } from '@/utils/constants';
+import { getModelsForBrand } from '@/utils/carModels';
+import { publishCarToFacebook } from '@/utils/facebook';
 import { useAuth } from '@/utils/useAuth';
 
 const MAX_IMAGES = 8;
@@ -57,7 +59,7 @@ function Section({ title, children }) {
 
 export default function AddCarPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [uploadingLabel, setUploadingLabel] = useState(null);
@@ -67,8 +69,13 @@ export default function AddCarPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    // تغيير الماركة يُصفّر الموديل لأن القائمة تعتمد عليها
+    setFormData((prev) =>
+      name === 'brand' ? { ...prev, brand: value, model: '' } : { ...prev, [name]: value }
+    );
   };
+
+  const models = getModelsForBrand(formData.brand);
 
   const handleImagesChange = (e) => {
     const selected = Array.from(e.target.files || []);
@@ -92,6 +99,12 @@ export default function AddCarPage() {
 
     if (!isSupabaseConfigured) {
       setError('قاعدة البيانات غير مهيأة حالياً. يرجى المحاولة لاحقاً.');
+      return;
+    }
+
+    // النشر متاح للمسجّلين فقط
+    if (!user) {
+      router.push('/login?redirect=/add');
       return;
     }
 
@@ -119,16 +132,21 @@ export default function AddCarPage() {
       phone_number: formData.phone_number,
       images,
       is_featured: false,
-      userId: user?.id || null,
+      userId: user.id,
     });
-    setLoading(false);
 
     if (!result) {
+      setLoading(false);
       setError('تعذر نشر الإعلان، يرجى التحقق من البيانات والمحاولة مجدداً.');
       return;
     }
 
-    router.push('/cars');
+    // النشر على صفحة فيسبوك — لا يعطّل نشر الإعلان إن فشل
+    setUploadingLabel('جاري النشر على فيسبوك...');
+    await publishCarToFacebook(result.id);
+
+    setLoading(false);
+    router.push('/account');
   };
 
   return (
@@ -138,7 +156,7 @@ export default function AddCarPage() {
       <PageHeader
         icon="plus"
         title="أضف إعلان سيارة"
-        subtitle="النشر مجاني — املأ البيانات التالية لعرض سيارتك"
+        subtitle={`النشر مجاني — الإعلان يُعرض ${AD_DURATION_DAYS} أيام وقابل للتجديد`}
       />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">
@@ -149,19 +167,37 @@ export default function AddCarPage() {
           </div>
         )}
 
-        {!user && (
-          <div className="mb-4 flex items-start gap-2 rounded-md border border-line bg-white px-3.5 py-3 text-xs text-slate-600">
-            <Icon name="info" className="mt-px h-4 w-4 shrink-0 text-slate-400" />
-            <span>
-              أنت غير مسجّل الدخول — يمكنك النشر كزائر، لكن الإعلان لن يظهر في صفحة «حسابي».{' '}
-              <Link href="/login" className="font-semibold text-accent hover:underline">
-                سجّل الدخول
-              </Link>{' '}
-              لإدارة إعلاناتك.
-            </span>
+        {authLoading && (
+          <div className="rounded-card border border-line bg-white px-6 py-20 text-center">
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-line border-t-accent" />
           </div>
         )}
 
+        {!authLoading && !user && (
+          <div className="rounded-card border border-dashed border-line bg-white px-6 py-16 text-center">
+            <Icon name="lock" className="mx-auto h-10 w-10 text-slate-300" strokeWidth={1.4} />
+            <p className="mt-3 text-sm font-semibold text-ink">سجّل الدخول لنشر إعلانك</p>
+            <p className="mx-auto mt-1.5 max-w-sm text-xs leading-relaxed text-muted">
+              النشر يتطلب حساباً حتى تتمكن من إدارة إعلاناتك وتجديدها وحذفها في أي وقت.
+            </p>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+              <Link
+                href="/login?redirect=/add"
+                className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-dark"
+              >
+                تسجيل الدخول
+              </Link>
+              <Link
+                href="/signup?redirect=/add"
+                className="inline-flex items-center gap-2 rounded-md border border-line px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+              >
+                إنشاء حساب جديد
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {!authLoading && user && (
         <form onSubmit={handleSubmit} className="space-y-4">
           <Section title="معلومات أساسية">
             <Field label="عنوان الإعلان" required>
@@ -194,16 +230,26 @@ export default function AddCarPage() {
                 </select>
               </Field>
 
-              <Field label="الموديل" required>
-                <input
-                  type="text"
+              <Field
+                label="الموديل"
+                required
+                hint={!formData.brand ? 'اختر الماركة أولاً' : undefined}
+              >
+                <select
                   name="model"
                   required
-                  placeholder="Clio"
-                  className={inputClass}
+                  disabled={!formData.brand}
+                  className={`${inputClass} disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400`}
                   value={formData.model}
                   onChange={handleChange}
-                />
+                >
+                  <option value="">{formData.brand ? 'اختر الموديل' : '—'}</option>
+                  {models.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
               </Field>
 
               <Field label="سنة الصنع" required>
@@ -391,10 +437,11 @@ export default function AddCarPage() {
               {loading ? uploadingLabel || 'جاري النشر...' : 'نشر الإعلان'}
             </button>
             <p className="text-2xs text-muted">
-              بالنشر أنت تؤكد أن المعلومات المقدَّمة صحيحة.
+              الإعلان يبقى معروضاً {AD_DURATION_DAYS} أيام، ويمكنك تجديده من «حسابي».
             </p>
           </div>
         </form>
+        )}
       </main>
 
       <Footer />
