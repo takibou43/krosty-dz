@@ -88,7 +88,7 @@ export default function Header() {
             {/* 2. تحويل الزر إلى Link ليوجه المستخدم إلى صفحة إضافة إعلان */}
             <Link
               href="/add"  /* ⚠️ غير هذا المسار إلى اسم مجلد صفحة إضافة الإعلان لديك، مثلاً /create أو /add-listing */
-              className="bg-accent hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 shadow-md text-sm block"
+              className="bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-sm block"
             >
               + أضف إعلانك
             </Link>
