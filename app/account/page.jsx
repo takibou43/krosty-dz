@@ -86,7 +86,7 @@ export default function AccountPage() {
               <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-100">
                 <div className="text-5xl mb-3">📭</div>
                 <p className="font-semibold text-gray-800">لم تنشر أي إعلان بعد</p>
-                <Link href="/add" className="mt-4 inline-block bg-accent hover:bg-orange-700 text-white font-bold py-2.5 px-5 rounded-lg transition">
+                <Link href="/add" className="mt-4 inline-block bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-white font-bold py-2.5 px-5 rounded-lg transition duration-300">
                   + أضف إعلانك الأول
                 </Link>
               </div>
