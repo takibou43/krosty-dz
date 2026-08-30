@@ -1,27 +1,34 @@
 'use client';
 
 import { useState } from 'react';
+import Icon from './Icon';
 import { WILAYAT, BRANDS } from '@/utils/constants';
-
-const wilayat = WILAYAT;
-const brands = BRANDS;
 
 const fuelTypes = ['Essence', 'Diesel', 'GPL', 'Hybride', 'Électrique'];
 const gearboxTypes = ['Manuelle', 'Automatique'];
 
+const EMPTY = { wilaya: '', brand: '', fuelType: '', gearbox: '', minPrice: '', maxPrice: '' };
+
+const fieldClass =
+  'w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink transition placeholder:text-slate-400 hover:border-slate-300 focus:border-accent focus:outline-none';
+
+function Field({ label, children }) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-2xs font-medium uppercase tracking-wide text-muted">{label}</span>
+      {children}
+    </label>
+  );
+}
+
 export default function SearchFilters({ onSearch }) {
-  const [filters, setFilters] = useState({
-    wilaya: '',
-    brand: '',
-    fuelType: '',
-    gearbox: '',
-    minPrice: '',
-    maxPrice: '',
-  });
+  const [filters, setFilters] = useState(EMPTY);
+
+  const activeCount = Object.values(filters).filter(Boolean).length;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSearch = () => {
@@ -29,98 +36,116 @@ export default function SearchFilters({ onSearch }) {
   };
 
   const handleReset = () => {
-    const empty = { wilaya: '', brand: '', fuelType: '', gearbox: '', minPrice: '', maxPrice: '' };
-    setFilters(empty);
-    if (onSearch) onSearch(empty);
+    setFilters(EMPTY);
+    if (onSearch) onSearch(EMPTY);
   };
 
-  const selectClass = "w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-accent focus:ring-2 focus:ring-red-100 text-sm bg-slate-50 focus:bg-white transition";
-
   return (
-    <div className="bg-white shadow-sm rounded-2xl p-5 mb-6 border border-gray-100">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-accent">🔍</span>
-        <h2 className="text-base font-bold text-primary">ابحث عن سيارتك</h2>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
-        {/* Wilaya */}
-        <div>
-          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">📍 الولاية</label>
-          <select name="wilaya" value={filters.wilaya} onChange={handleChange} className={selectClass}>
-            <option value="">كل الولايات</option>
-            {wilayat.map((w, index) => <option key={`wilaya-${index}-${w}`} value={w}>{w}</option>)}
-          </select>
-        </div>
-
-        {/* Brand */}
-        <div>
-          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">🏷️ الماركة</label>
-          <select name="brand" value={filters.brand} onChange={handleChange} className={selectClass}>
-            <option value="">كل الماركات</option>
-            {brands.map(b => <option key={b} value={b}>{b}</option>)}
-          </select>
-        </div>
-
-        {/* Fuel */}
-        <div>
-          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">⛽ الوقود</label>
-          <select name="fuelType" value={filters.fuelType} onChange={handleChange} className={selectClass}>
-            <option value="">كل الأنواع</option>
-            {fuelTypes.map(f => <option key={f} value={f}>{f}</option>)}
-          </select>
-        </div>
-
-        {/* Gearbox */}
-        <div>
-          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">⚙️ ناقل الحركة</label>
-          <select name="gearbox" value={filters.gearbox} onChange={handleChange} className={selectClass}>
-            <option value="">الكل</option>
-            {gearboxTypes.map(g => <option key={g} value={g}>{g}</option>)}
-          </select>
-        </div>
-
-        {/* Min Price */}
-        <div>
-          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">💰 السعر من (دج)</label>
-          <input
-            type="number"
-            name="minPrice"
-            value={filters.minPrice}
-            onChange={handleChange}
-            placeholder="0"
-            className={selectClass}
-          />
-        </div>
-
-        {/* Max Price */}
-        <div>
-          <label className="mb-1 flex items-center gap-1 text-xs font-semibold text-gray-500">💰 السعر إلى (دج)</label>
-          <input
-            type="number"
-            name="maxPrice"
-            value={filters.maxPrice}
-            onChange={handleChange}
-            placeholder="بلا حد"
-            className={selectClass}
-          />
-        </div>
+    <section className="mb-5 rounded-card border border-line bg-white shadow-card">
+      <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
+          <Icon name="search" className="h-4 w-4 text-accent" />
+          ابحث عن سيارتك
+        </h2>
+        {activeCount > 0 && (
+          <button
+            type="button"
+            onClick={handleReset}
+            className="inline-flex items-center gap-1 text-xs font-medium text-muted transition hover:text-accent"
+          >
+            <Icon name="close" className="h-3.5 w-3.5" />
+            مسح الفلاتر ({activeCount})
+          </button>
+        )}
       </div>
 
-      {/* Buttons */}
-      <div className="flex gap-3">
-        <button
-          onClick={handleSearch}
-          className="flex-1 bg-accent hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-300 text-sm shadow-sm"
-        >
-          🔍 بحث
-        </button>
-        <button
-          onClick={handleReset}
-          className="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-2.5 px-5 rounded-lg transition duration-300 text-sm"
-        >
-          مسح
-        </button>
+      <div className="p-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+          <Field label="الولاية">
+            <select name="wilaya" value={filters.wilaya} onChange={handleChange} className={fieldClass}>
+              <option value="">كل الولايات</option>
+              {WILAYAT.map((w, i) => (
+                <option key={`wilaya-${i}-${w}`} value={w}>
+                  {w}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label="الماركة">
+            <select name="brand" value={filters.brand} onChange={handleChange} className={fieldClass}>
+              <option value="">كل الماركات</option>
+              {BRANDS.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label="الوقود">
+            <select name="fuelType" value={filters.fuelType} onChange={handleChange} className={fieldClass}>
+              <option value="">كل الأنواع</option>
+              {fuelTypes.map((f) => (
+                <option key={f} value={f}>
+                  {f}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label="ناقل الحركة">
+            <select name="gearbox" value={filters.gearbox} onChange={handleChange} className={fieldClass}>
+              <option value="">الكل</option>
+              {gearboxTypes.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label="السعر من (دج)">
+            <input
+              type="number"
+              name="minPrice"
+              value={filters.minPrice}
+              onChange={handleChange}
+              placeholder="0"
+              className={`${fieldClass} nums`}
+            />
+          </Field>
+
+          <Field label="السعر إلى (دج)">
+            <input
+              type="number"
+              name="maxPrice"
+              value={filters.maxPrice}
+              onChange={handleChange}
+              placeholder="بلا حد"
+              className={`${fieldClass} nums`}
+            />
+          </Field>
+        </div>
+
+        <div className="mt-4 flex gap-2">
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-dark sm:flex-none sm:px-8"
+          >
+            <Icon name="search" className="h-4 w-4" strokeWidth={2} />
+            بحث
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="rounded-md border border-line px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+          >
+            مسح
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

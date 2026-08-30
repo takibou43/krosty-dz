@@ -1,17 +1,26 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link'; // 1. قمنا باستيراد مكون التنقل من Next.js
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+import Icon from './Icon';
 import { getFavoritesCount, subscribeFavorites } from '@/utils/favorites';
 import { useAuth } from '@/utils/useAuth';
 import { signOut } from '@/utils/supabase';
+
+const NAV_LINKS = [
+  { href: '/', label: 'الرئيسية' },
+  { href: '/cars', label: 'السيارات' },
+  { href: '/about', label: 'من نحن' },
+  { href: '/contact', label: 'اتصل بنا' },
+];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [favCount, setFavCount] = useState(0);
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     setFavCount(getFavoritesCount());
@@ -19,103 +28,164 @@ export default function Header() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   const handleLogout = async () => {
     await signOut();
     router.push('/');
   };
 
+  const isActive = (href) => (href === '/' ? pathname === '/' : pathname?.startsWith(href));
+
   return (
-    <header className="bg-white shadow-md border-b-4 border-accent sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center cursor-pointer"> {/* جعلنا الشعار يعيد للمجال الرئيسي عند الضغط */}
-            <img src="/logo.webp" alt="Crosty - بيع وشراء السيارات" className="h-12 md:h-14 w-auto" />
+    <header className="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="flex h-16 items-center justify-between gap-4">
+          {/* الشعار */}
+          <Link href="/" className="flex shrink-0 items-center" aria-label="كروستي DZ - الصفحة الرئيسية">
+            <img
+              src="/logo.webp"
+              alt="Crosty — بيع وشراء السيارات"
+              className="h-10 w-auto md:h-11"
+            />
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-6 font-semibold text-gray-700 text-sm">
-            <Link href="/" className="hover:text-accent transition">الرئيسية</Link>
-            <Link href="/cars" className="hover:text-accent transition">السيارات</Link>
-            <Link href="/about" className="hover:text-accent transition">من نحن</Link>
-            <Link href="/contact" className="hover:text-accent transition">اتصل بنا</Link>
+          {/* التنقل - سطح المكتب */}
+          <nav className="hidden items-center gap-1 md:flex">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`rounded-md px-3 py-2 text-sm font-medium transition ${
+                  isActive(link.href)
+                    ? 'text-accent'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-ink'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
-          {/* CTA + Mobile Menu */}
-          <div className="flex items-center gap-3">
-            {/* المفضلة */}
+          {/* الإجراءات */}
+          <div className="flex items-center gap-1.5">
             <Link
               href="/favorites"
-              aria-label="المفضلة"
-              className="relative flex items-center justify-center text-gray-500 hover:text-accent transition"
+              aria-label={`المفضلة${favCount > 0 ? ` (${favCount})` : ''}`}
+              className="relative flex h-9 w-9 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-accent"
             >
-              <span className="text-xl">❤️</span>
+              <Icon name="heart" className="h-[18px] w-[18px]" />
               {favCount > 0 && (
-                <span className="absolute -top-1.5 -left-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white">
+                <span className="absolute -left-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold text-white nums">
                   {favCount}
                 </span>
               )}
             </Link>
 
-            {/* حالة تسجيل الدخول (Desktop) */}
-            {!loading && (
-              user ? (
-                <div className="hidden md:flex items-center gap-2">
-                  <Link href="/account" className="text-sm font-semibold text-gray-700 hover:text-accent transition">
-                    👤 حسابي
+            {!loading &&
+              (user ? (
+                <div className="hidden items-center gap-1 md:flex">
+                  <Link
+                    href="/account"
+                    className="flex items-center gap-1.5 rounded-md px-2.5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-ink"
+                  >
+                    <Icon name="user" className="h-[18px] w-[18px]" />
+                    حسابي
                   </Link>
                   <button
+                    type="button"
                     onClick={handleLogout}
-                    className="text-sm font-semibold text-gray-400 hover:text-red-600 transition"
+                    aria-label="تسجيل الخروج"
+                    className="flex h-9 w-9 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-accent"
                   >
-                    خروج
+                    <Icon name="logout" className="h-[18px] w-[18px]" />
                   </button>
                 </div>
               ) : (
-                <Link href="/login" className="hidden md:block text-sm font-semibold text-gray-700 hover:text-accent transition">
+                <Link
+                  href="/login"
+                  className="hidden rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-ink md:block"
+                >
                   تسجيل الدخول
                 </Link>
-              )
-            )}
+              ))}
 
-            {/* 2. تحويل الزر إلى Link ليوجه المستخدم إلى صفحة إضافة إعلان */}
             <Link
-              href="/add"  /* ⚠️ غير هذا المسار إلى اسم مجلد صفحة إضافة الإعلان لديك، مثلاً /create أو /add-listing */
-              className="bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-sm block"
+              href="/add"
+              className="inline-flex items-center gap-1.5 rounded-md bg-accent px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-accent-dark md:px-4"
             >
-              + أضف إعلانك
+              <Icon name="plus" className="h-4 w-4" strokeWidth={2.2} />
+              <span className="hidden sm:inline">أضف إعلانك</span>
+              <span className="sm:hidden">إعلان</span>
             </Link>
 
             <button
-              className="md:hidden text-primary"
+              type="button"
               onClick={() => setMenuOpen(!menuOpen)}
+              aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+              aria-expanded={menuOpen}
+              className="flex h-9 w-9 items-center justify-center rounded-md text-slate-600 transition hover:bg-slate-100 md:hidden"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {menuOpen
-                  ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                }
-              </svg>
+              <Icon name={menuOpen ? 'close' : 'menu'} className="h-5 w-5" strokeWidth={2} />
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* قائمة الجوال */}
         {menuOpen && (
-          <nav className="md:hidden mt-3 pt-3 border-t flex flex-col gap-3 font-semibold text-gray-700">
-            <Link href="/" className="hover:text-accent transition">الرئيسية</Link>
-            <Link href="/cars" className="hover:text-accent transition">السيارات</Link>
-            <Link href="/favorites" className="hover:text-accent transition">❤️ المفضلة{favCount > 0 ? ` (${favCount})` : ''}</Link>
+          <nav className="flex flex-col gap-0.5 border-t border-line py-2 md:hidden">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`rounded-md px-3 py-2.5 text-sm font-medium transition ${
+                  isActive(link.href) ? 'bg-slate-50 text-accent' : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            <Link
+              href="/favorites"
+              className="flex items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+            >
+              <span className="flex items-center gap-2">
+                <Icon name="heart" className="h-4 w-4 text-slate-400" />
+                المفضلة
+              </span>
+              {favCount > 0 && <span className="text-xs text-muted nums">{favCount}</span>}
+            </Link>
+
             {user ? (
               <>
-                <Link href="/account" className="hover:text-accent transition">👤 حسابي</Link>
-                <button onClick={handleLogout} className="text-right hover:text-red-600 transition">تسجيل الخروج</button>
+                <Link
+                  href="/account"
+                  className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                >
+                  <Icon name="user" className="h-4 w-4 text-slate-400" />
+                  حسابي
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 rounded-md px-3 py-2.5 text-right text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                >
+                  <Icon name="logout" className="h-4 w-4 text-slate-400" />
+                  تسجيل الخروج
+                </button>
               </>
             ) : (
-              <Link href="/login" className="hover:text-accent transition">تسجيل الدخول</Link>
+              <Link
+                href="/login"
+                className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+              >
+                <Icon name="lock" className="h-4 w-4 text-slate-400" />
+                تسجيل الدخول
+              </Link>
             )}
-            <Link href="/about" className="hover:text-accent transition">من نحن</Link>
-            <Link href="/contact" className="hover:text-accent transition">اتصل بنا</Link>
           </nav>
         )}
       </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Icon from './Icon';
 import { isFavorite, toggleFavorite } from '@/utils/favorites';
 
 function timeAgo(dateStr) {
@@ -22,6 +23,12 @@ function timeAgo(dateStr) {
   return `منذ ${years} ${years === 1 ? 'سنة' : 'سنوات'}`;
 }
 
+function formatMileage(km) {
+  const n = Number(km);
+  if (!n || Number.isNaN(n)) return null;
+  return `${n.toLocaleString('en-US')} كم`;
+}
+
 function FavoriteButton({ carId, className = '' }) {
   const [fav, setFav] = useState(false);
 
@@ -40,130 +47,192 @@ function FavoriteButton({ carId, className = '' }) {
       type="button"
       onClick={handleClick}
       aria-label={fav ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
-      className={`flex items-center justify-center rounded-full bg-white/90 shadow transition hover:scale-110 ${className}`}
+      aria-pressed={fav}
+      className={`flex items-center justify-center rounded-full border border-line bg-white/95 backdrop-blur transition hover:border-accent ${
+        fav ? 'text-accent' : 'text-slate-400 hover:text-accent'
+      } ${className}`}
     >
-      <span className={fav ? 'text-red-500' : 'text-gray-400'}>{fav ? '❤️' : '🤍'}</span>
+      <Icon name="heart" filled={fav} className="h-[18px] w-[18px]" strokeWidth={1.9} />
     </button>
+  );
+}
+
+function SpecItem({ icon, value }) {
+  if (!value) return null;
+  return (
+    <span className="inline-flex min-w-0 items-center gap-1 text-slate-600">
+      <Icon name={icon} className="h-3.5 w-3.5 shrink-0 text-slate-400" strokeWidth={1.8} />
+      <span className="truncate nums">{value}</span>
+    </span>
+  );
+}
+
+function Placeholder({ size = 'h-8 w-8' }) {
+  return (
+    <div className="flex h-full w-full items-center justify-center bg-slate-100 text-slate-300">
+      <Icon name="car" className={size} strokeWidth={1.2} />
+    </div>
   );
 }
 
 export default function CarCard({ car, view = 'grid' }) {
   const cover = Array.isArray(car.images) && car.images.length > 0 ? car.images[0] : null;
   const posted = timeAgo(car.created_at);
+  const price = Number(car.price || 0).toLocaleString('en-US');
+  const mileage = formatMileage(car.mileage);
+  const photoCount = Array.isArray(car.images) ? car.images.length : 0;
 
+  /* ---------- عرض القائمة ---------- */
   if (view === 'list') {
     return (
-      <div className="group flex overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:shadow-lg">
-        <Link href={`/cars/${car.id}`} className="relative h-32 w-32 sm:h-36 sm:w-48 flex-shrink-0 overflow-hidden bg-slate-100">
-          {cover ? (
-            <img src={cover} alt={car.title || 'صورة السيارة'} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />
-          ) : (
-            <div className="flex h-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400 text-2xl">🚗</div>
-          )}
-          {car.is_featured && (
-            <span className="absolute top-1.5 right-1.5 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-white shadow">⭐ مميز</span>
-          )}
-        </Link>
-
-        <div className="flex flex-1 flex-col justify-between p-3">
-          <div>
-            <div className="flex items-start justify-between gap-2">
-              <Link href={`/cars/${car.id}`} className="min-w-0">
-                <h3 className="line-clamp-1 text-[15px] font-bold text-slate-800">{car.title || 'سيارة مميزة'}</h3>
-              </Link>
-              <FavoriteButton carId={car.id} className="h-7 w-7 flex-shrink-0 text-sm" />
-            </div>
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-              <span className="flex items-center gap-1">🏷️ {car.brand || 'ماركة'}</span>
-              <span className="flex items-center gap-1">📅 {car.year || '-'}</span>
-              <span className="flex items-center gap-1">⛽ {car.fuel_type || '-'}</span>
-              <span className="flex items-center gap-1">⚙️ {car.gearbox || '-'}</span>
-            </div>
-          </div>
-          <div className="flex items-end justify-between gap-2 mt-2">
-            <div>
-              <p className="text-lg font-black text-accent">
-                {Number(car.price || 0).toLocaleString('ar-DZ')}
-                <span className="mr-1 text-xs font-semibold text-slate-400">دج</span>
-              </p>
-              <p className="text-[11px] text-slate-400">📍 {car.wilaya || 'الجزائر'}{posted ? ` · ${posted}` : ''}</p>
-            </div>
-            {car.phone_number && (
-              <a
-                href={`tel:${car.phone_number}`}
-                onClick={(e) => e.stopPropagation()}
-                className="flex-shrink-0 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary transition hover:bg-primary/20"
-              >
-                📞 اتصال
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-      <Link href={`/cars/${car.id}`} className="block">
-        <div className="relative h-44 w-full overflow-hidden bg-slate-100">
+      <article className="group relative flex overflow-hidden rounded-card border border-line bg-white shadow-card transition hover:border-slate-300 hover:shadow-pop">
+        <Link
+          href={`/cars/${car.id}`}
+          className="relative aspect-[4/3] w-32 shrink-0 overflow-hidden sm:w-44"
+        >
           {cover ? (
             <img
               src={cover}
               alt={car.title || 'صورة السيارة'}
-              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
               loading="lazy"
             />
           ) : (
-            <div className="flex h-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400 text-3xl">
-              🚗
-            </div>
+            <Placeholder size="h-7 w-7" />
           )}
-
           {car.is_featured && (
-            <span className="absolute top-2 right-2 rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold text-white shadow">
-              ⭐ مميز
+            <span className="absolute right-1.5 top-1.5 inline-flex items-center gap-1 rounded bg-accent px-1.5 py-0.5 text-2xs font-semibold text-white">
+              <Icon name="star" filled className="h-2.5 w-2.5" />
+              مميز
             </span>
           )}
+        </Link>
 
-          <FavoriteButton carId={car.id} className="absolute top-2 left-2 h-8 w-8" />
+        <div className="flex min-w-0 flex-1 flex-col justify-between gap-2 p-3">
+          <div className="min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <Link href={`/cars/${car.id}`} className="min-w-0">
+                <h3 className="line-clamp-1 text-[15px] font-semibold text-ink transition group-hover:text-accent">
+                  {car.title || 'سيارة معروضة'}
+                </h3>
+              </Link>
+              <p className="shrink-0 text-[17px] font-bold leading-none text-ink nums">
+                {price}
+                <span className="mr-1 text-2xs font-medium text-muted">دج</span>
+              </p>
+            </div>
 
-          <span className="absolute bottom-2 right-2 rounded-md bg-black/60 px-2 py-0.5 text-[11px] font-semibold text-white">
-            📍 {car.wilaya || 'الجزائر'}
+            <div className="mt-2 flex flex-wrap items-center gap-x-3.5 gap-y-1 text-xs">
+              <SpecItem icon="calendar" value={car.year} />
+              <SpecItem icon="gauge" value={mileage} />
+              <SpecItem icon="fuel" value={car.fuel_type} />
+              <SpecItem icon="gearbox" value={car.gearbox} />
+              <SpecItem icon="tag" value={car.brand} />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-2 border-t border-line pt-2">
+            <div className="flex min-w-0 items-center gap-3 text-2xs text-muted">
+              <span className="inline-flex items-center gap-1 truncate">
+                <Icon name="mapPin" className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                {car.wilaya || 'الجزائر'}
+              </span>
+              {posted && (
+                <span className="inline-flex shrink-0 items-center gap-1">
+                  <Icon name="clock" className="h-3.5 w-3.5 text-slate-400" />
+                  {posted}
+                </span>
+              )}
+            </div>
+
+            <div className="flex shrink-0 items-center gap-1.5">
+              <FavoriteButton carId={car.id} className="h-8 w-8" />
+              {car.phone_number && (
+                <a
+                  href={`tel:${car.phone_number}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1.5 rounded-md bg-ink px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-black"
+                >
+                  <Icon name="phone" className="h-3.5 w-3.5" />
+                  اتصال
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  /* ---------- عرض الشبكة ---------- */
+  return (
+    <article className="group relative flex flex-col overflow-hidden rounded-card border border-line bg-white shadow-card transition hover:border-slate-300 hover:shadow-pop">
+      <Link href={`/cars/${car.id}`} className="relative block aspect-[4/3] overflow-hidden">
+        {cover ? (
+          <img
+            src={cover}
+            alt={car.title || 'صورة السيارة'}
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+            loading="lazy"
+          />
+        ) : (
+          <Placeholder />
+        )}
+
+        {car.is_featured && (
+          <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded bg-accent px-2 py-0.5 text-2xs font-semibold text-white">
+            <Icon name="star" filled className="h-3 w-3" />
+            مميز
           </span>
-        </div>
+        )}
 
-        <div className="p-3.5">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="line-clamp-1 text-[15px] font-bold text-slate-800">
-              {car.title || 'سيارة مميزة'}
-            </h3>
-          </div>
-
-          <p className="mt-1.5 text-xl font-black text-accent">
-            {Number(car.price || 0).toLocaleString('ar-DZ')}
-            <span className="mr-1 text-xs font-semibold text-slate-400">دج</span>
-          </p>
-
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-gray-100 pt-3 text-xs text-slate-500">
-            <span className="flex items-center gap-1">🏷️ {car.brand || 'ماركة'}</span>
-            <span className="flex items-center gap-1">📅 {car.year || '-'}</span>
-            <span className="flex items-center gap-1">⛽ {car.fuel_type || '-'}</span>
-            <span className="flex items-center gap-1">⚙️ {car.gearbox || '-'}</span>
-          </div>
-
-          {posted && <p className="mt-2 text-[11px] text-slate-400">🕒 {posted}</p>}
-        </div>
+        {photoCount > 1 && (
+          <span className="absolute bottom-2 left-2 inline-flex items-center gap-1 rounded bg-black/65 px-1.5 py-0.5 text-2xs font-medium text-white backdrop-blur-sm nums">
+            <Icon name="camera" className="h-3 w-3" strokeWidth={1.6} />
+            {photoCount}
+          </span>
+        )}
       </Link>
+
+      <FavoriteButton carId={car.id} className="absolute left-2 top-2 h-8 w-8" />
+
+      <div className="flex flex-1 flex-col p-3">
+        <Link href={`/cars/${car.id}`} className="min-w-0">
+          <h3 className="line-clamp-1 text-sm font-semibold text-ink transition group-hover:text-accent">
+            {car.title || 'سيارة معروضة'}
+          </h3>
+        </Link>
+
+        <p className="mt-1.5 text-lg font-bold leading-none text-ink nums">
+          {price}
+          <span className="mr-1 text-xs font-medium text-muted">دج</span>
+        </p>
+
+        <div className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-line pt-2.5 text-xs">
+          <SpecItem icon="calendar" value={car.year} />
+          <SpecItem icon="gauge" value={mileage} />
+          <SpecItem icon="fuel" value={car.fuel_type} />
+          <SpecItem icon="gearbox" value={car.gearbox} />
+        </div>
+
+        <div className="mt-auto flex items-center justify-between gap-2 pt-2.5 text-2xs text-muted">
+          <span className="inline-flex min-w-0 items-center gap-1">
+            <Icon name="mapPin" className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+            <span className="truncate">{car.wilaya || 'الجزائر'}</span>
+          </span>
+          {posted && <span className="shrink-0">{posted}</span>}
+        </div>
+      </div>
 
       {car.phone_number && (
         <a
           href={`tel:${car.phone_number}`}
-          className="flex items-center justify-center gap-2 border-t border-gray-100 py-2.5 text-sm font-bold text-primary transition hover:bg-slate-50"
+          className="flex items-center justify-center gap-2 border-t border-line py-2.5 text-xs font-semibold text-ink transition hover:bg-slate-50 hover:text-accent"
         >
-          📞 اتصال بالبائع
+          <Icon name="phone" className="h-3.5 w-3.5" />
+          اتصال بالبائع
         </a>
       )}
-    </div>
+    </article>
   );
 }
