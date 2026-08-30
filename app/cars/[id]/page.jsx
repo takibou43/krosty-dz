@@ -46,7 +46,7 @@ export default function CarDetailPage() {
       <main className="max-w-5xl mx-auto px-4 py-6 md:py-8">
         {loading && (
           <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-600 mb-4"></div>
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600 mb-4"></div>
             <p className="text-sm font-medium">جاري تحميل تفاصيل الإعلان...</p>
           </div>
         )}
@@ -101,7 +101,7 @@ export default function CarDetailPage() {
                     <h1 className="text-2xl font-bold text-slate-800">{car.title}</h1>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {car.is_featured && (
-                        <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-accent whitespace-nowrap">
+                        <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-accent whitespace-nowrap">
                           مميز
                         </span>
                       )}
@@ -145,7 +145,7 @@ export default function CarDetailPage() {
                   {car.phone_number ? (
                     <a
                       href={`tel:${car.phone_number}`}
-                      className="block text-center bg-accent hover:bg-orange-700 text-white font-bold py-3 rounded-lg transition"
+                      className="block text-center bg-accent hover:bg-red-700 text-white font-bold py-3 rounded-lg transition"
                     >
                       📞 {car.phone_number}
                     </a>
