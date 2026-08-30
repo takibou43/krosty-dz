@@ -1,9 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PageHeader from '@/components/PageHeader';
 import CarCard from '@/components/CarCard';
+import Icon from '@/components/Icon';
 import { getCarsByIds, isSupabaseConfigured } from '@/utils/supabase';
 import { getFavoriteIds, subscribeFavorites } from '@/utils/favorites';
 
@@ -20,7 +23,6 @@ export default function FavoritesPage() {
       return;
     }
     const data = await getCarsByIds(ids);
-    // الحفاظ على ترتيب الإضافة الأحدث أولاً
     const ordered = [...data].sort((a, b) => ids.indexOf(String(b.id)) - ids.indexOf(String(a.id)));
     setCars(ordered);
     setLoading(false);
@@ -34,41 +36,53 @@ export default function FavoritesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50" dir="rtl">
+    <div className="flex min-h-screen flex-col bg-canvas" dir="rtl">
       <Header />
 
-      <div className="bg-gradient-to-l from-primary to-black py-6 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-black text-white flex items-center gap-2">
-            ❤️ السيارات المفضلة
-          </h1>
-          <p className="text-sm text-gray-300 mt-1">السيارات التي حفظتها لمراجعتها لاحقاً</p>
-        </div>
-      </div>
+      <PageHeader
+        icon="heart"
+        title="السيارات المفضلة"
+        subtitle="السيارات التي حفظتها لمراجعتها لاحقاً"
+      />
 
-      <main className="max-w-7xl mx-auto px-4 py-6 md:py-8">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600 mb-4"></div>
-            <p className="text-sm font-medium">جاري تحميل المفضلة...</p>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="overflow-hidden rounded-card border border-line bg-white">
+                <div className="aspect-[4/3] animate-pulse bg-slate-100" />
+                <div className="space-y-2 p-3">
+                  <div className="h-3.5 w-3/4 animate-pulse rounded bg-slate-100" />
+                  <div className="h-4 w-1/2 animate-pulse rounded bg-slate-100" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
         {!loading && cars.length === 0 && (
-          <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
-            <div className="text-5xl mb-3">🤍</div>
-            <p className="font-semibold text-gray-800">لا توجد سيارات في المفضلة بعد</p>
-            <p className="text-sm text-gray-500 mt-1 mb-4">اضغط على أيقونة القلب في أي إعلان لإضافته هنا</p>
-            <a href="/cars" className="inline-block bg-accent hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-lg transition">
-              تصفح السيارات
-            </a>
+          <div className="rounded-card border border-dashed border-line bg-white px-6 py-20 text-center">
+            <Icon name="heart" className="mx-auto h-10 w-10 text-slate-300" strokeWidth={1.4} />
+            <p className="mt-3 text-sm font-semibold text-ink">لا توجد سيارات في المفضلة بعد</p>
+            <p className="mt-1 text-xs text-muted">
+              اضغط على أيقونة القلب في أي إعلان لإضافته هنا
+            </p>
+            <Link
+              href="/cars"
+              className="mt-5 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-dark"
+            >
+              <Icon name="search" className="h-4 w-4" />
+              تصفّح السيارات
+            </Link>
           </div>
         )}
 
         {!loading && cars.length > 0 && (
           <>
-            <p className="text-sm text-gray-500 mb-4">{cars.length} سيارة محفوظة</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <p className="mb-4 border-b border-line pb-3 text-sm text-muted">
+              <span className="font-semibold text-ink nums">{cars.length}</span> سيارة محفوظة
+            </p>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
               {cars.map((car) => (
                 <CarCard key={car.id} car={car} />
               ))}
