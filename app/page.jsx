@@ -13,7 +13,7 @@ export default function HomePage() {
         <div className="flex justify-end mb-6">
           <a
             href="/add"
-            className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-bold text-white shadow-lg hover:bg-orange-600 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-transparent border-2 border-accent px-6 py-3 font-bold text-accent hover:bg-accent hover:text-white transition duration-300"
           >
             <span className="text-lg leading-none">+</span> أضف إعلانك
           </a>
