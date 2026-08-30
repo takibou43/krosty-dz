@@ -87,7 +87,7 @@ export default function CarGrid({ filters = {} }) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-600 mb-4"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-600 mb-4"></div>
         <p className="text-sm font-medium">جاري البحث في قاعدة البيانات...</p>
       </div>
     );
@@ -116,7 +116,7 @@ export default function CarGrid({ filters = {} }) {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="rounded-lg border border-gray-200 bg-white p-2 text-xs font-semibold text-slate-600 focus:outline-none focus:border-accent focus:ring-2 focus:ring-orange-100"
+            className="rounded-lg border border-gray-200 bg-white p-2 text-xs font-semibold text-slate-600 focus:outline-none focus:border-accent focus:ring-2 focus:ring-red-100"
             aria-label="ترتيب حسب"
           >
             {SORT_OPTIONS.map((opt) => (

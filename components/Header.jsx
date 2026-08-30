@@ -29,15 +29,8 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 cursor-pointer"> {/* جعلنا الشعار يعيد للمجال الرئيسي عند الضغط */}
-            <span className="text-2xl">🚗</span>
-            <div>
-              <h1 className="text-xl font-bold leading-none">
-                <span className="text-accent">Carrosti</span>
-                <span className="text-primary"> DZ</span>
-              </h1>
-              <p className="text-xs text-gray-500">إعلانات السيارات في الجزائر</p>
-            </div>
+          <Link href="/" className="flex items-center cursor-pointer"> {/* جعلنا الشعار يعيد للمجال الرئيسي عند الضغط */}
+            <img src="/logo.webp" alt="Crosty - بيع وشراء السيارات" className="h-12 md:h-14 w-auto" />
           </Link>
 
           {/* Desktop Nav */}

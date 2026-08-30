@@ -104,7 +104,7 @@ export default function FeaturedAdsSection({ onPlanSelect }) {
               onClick={() => handleSelectPlan(plan)}
               className={`w-full font-bold py-2.5 rounded-lg text-sm transition duration-300 ${
                 plan.badge
-                  ? 'bg-accent hover:bg-orange-600 text-white shadow-md'
+                  ? 'bg-accent hover:bg-red-600 text-white shadow-md'
                   : 'bg-primary hover:bg-black text-white'
               }`}
             >
@@ -125,7 +125,7 @@ export default function FeaturedAdsSection({ onPlanSelect }) {
             </p>
 
             {/* الحاوية المالية */}
-            <div className="bg-orange-50 rounded-xl p-4 mb-6 border border-orange-100">
+            <div className="bg-red-50 rounded-xl p-4 mb-6 border border-red-100">
               <p className="text-xs text-gray-500 mb-1">الخطة: <span className="font-bold text-gray-700">{selectedPlan.name}</span></p>
               <p className="text-xs text-gray-500 mb-2">المبلغ الإجمالي المستحق:</p>
               <p className="text-3xl font-black text-accent">{selectedPlan.price}</p>
@@ -136,7 +136,7 @@ export default function FeaturedAdsSection({ onPlanSelect }) {
               <button
                 type="button"
                 onClick={handleConfirmPayment}
-                className="w-full bg-accent text-white font-bold py-3 rounded-lg text-sm hover:bg-orange-600 shadow transition"
+                className="w-full bg-accent text-white font-bold py-3 rounded-lg text-sm hover:bg-red-600 shadow transition"
               >
                 لقد قمت بالتحويل (تأكيد الطلب)
               </button>

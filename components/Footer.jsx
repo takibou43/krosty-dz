@@ -35,13 +35,13 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-bold mb-4">تابعنا</h3>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 bg-accent rounded-full flex items-center justify-center hover:bg-orange-600 transition">
+              <a href="#" className="w-10 h-10 bg-accent rounded-full flex items-center justify-center hover:bg-red-600 transition">
                 f
               </a>
-              <a href="#" className="w-10 h-10 bg-accent rounded-full flex items-center justify-center hover:bg-orange-600 transition">
+              <a href="#" className="w-10 h-10 bg-accent rounded-full flex items-center justify-center hover:bg-red-600 transition">
                 📱
               </a>
-              <a href="#" className="w-10 h-10 bg-accent rounded-full flex items-center justify-center hover:bg-orange-600 transition">
+              <a href="#" className="w-10 h-10 bg-accent rounded-full flex items-center justify-center hover:bg-red-600 transition">
                 🔔
               </a>
             </div>

@@ -34,12 +34,12 @@ export default function SearchFilters({ onSearch }) {
     if (onSearch) onSearch(empty);
   };
 
-  const selectClass = "w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-accent focus:ring-2 focus:ring-orange-100 text-sm bg-slate-50 focus:bg-white transition";
+  const selectClass = "w-full p-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-accent focus:ring-2 focus:ring-red-100 text-sm bg-slate-50 focus:bg-white transition";
 
   return (
     <div className="bg-white shadow-sm rounded-2xl p-5 mb-6 border border-gray-100">
       <div className="flex items-center gap-2 mb-4">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-accent">🔍</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-accent">🔍</span>
         <h2 className="text-base font-bold text-primary">ابحث عن سيارتك</h2>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
@@ -110,7 +110,7 @@ export default function SearchFilters({ onSearch }) {
       <div className="flex gap-3">
         <button
           onClick={handleSearch}
-          className="flex-1 bg-accent hover:bg-orange-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-300 text-sm shadow-sm"
+          className="flex-1 bg-accent hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg transition duration-300 text-sm shadow-sm"
         >
           🔍 بحث
         </button>
