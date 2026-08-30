@@ -8,13 +8,21 @@ import PageHeader from '@/components/PageHeader';
 import CarCard from '@/components/CarCard';
 import Icon from '@/components/Icon';
 import { useAuth } from '@/utils/useAuth';
-import { getMyCars, deleteCar } from '@/utils/supabase';
+import {
+  getMyCars,
+  deleteCar,
+  renewCar,
+  isExpired,
+  timeLeft,
+  AD_DURATION_DAYS,
+} from '@/utils/supabase';
 
 export default function AccountPage() {
   const { user, loading: authLoading } = useAuth();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [renewingId, setRenewingId] = useState(null);
 
   const loadCars = async (userId) => {
     setLoading(true);
@@ -38,6 +46,15 @@ export default function AccountPage() {
       setCars((prev) => prev.filter((c) => c.id !== carId));
     }
     setDeletingId(null);
+  };
+
+  const handleRenew = async (carId) => {
+    setRenewingId(carId);
+    const updated = await renewCar(carId);
+    if (updated) {
+      setCars((prev) => prev.map((c) => (c.id === carId ? { ...c, ...updated } : c)));
+    }
+    setRenewingId(null);
   };
 
   return (
@@ -124,20 +141,57 @@ export default function AccountPage() {
 
             {!loading && cars.length > 0 && (
               <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
-                {cars.map((car) => (
-                  <div key={car.id} className="flex flex-col gap-2">
-                    <CarCard car={car} view="grid" />
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(car.id)}
-                      disabled={deletingId === car.id}
-                      className="inline-flex items-center justify-center gap-1.5 rounded-md border border-line py-2 text-xs font-medium text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-                    >
-                      <Icon name="trash" className="h-3.5 w-3.5" />
-                      {deletingId === car.id ? 'جاري الحذف...' : 'حذف الإعلان'}
-                    </button>
-                  </div>
-                ))}
+                {cars.map((car) => {
+                  const expired = isExpired(car);
+                  const left = timeLeft(car);
+                  return (
+                    <div key={car.id} className="flex flex-col gap-2">
+                      <div className={expired ? 'opacity-60 grayscale' : undefined}>
+                        <CarCard car={car} view="grid" />
+                      </div>
+
+                      {/* حالة الإعلان */}
+                      {expired ? (
+                        <p className="flex items-center gap-1.5 rounded-md bg-amber-50 px-2.5 py-1.5 text-2xs font-medium text-amber-800">
+                          <Icon name="clock" className="h-3.5 w-3.5 shrink-0" />
+                          انتهى العرض — جدّده ليظهر من جديد
+                        </p>
+                      ) : (
+                        <p className="flex items-center gap-1.5 px-1 text-2xs text-muted">
+                          <Icon name="clock" className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                          يُعرض لمدة {left} بعد
+                        </p>
+                      )}
+
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleRenew(car.id)}
+                          disabled={renewingId === car.id}
+                          className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-md py-2 text-xs font-semibold transition disabled:opacity-50 ${
+                            expired
+                              ? 'bg-accent text-white hover:bg-accent-dark'
+                              : 'border border-line text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                        >
+                          <Icon name="bolt" className="h-3.5 w-3.5" />
+                          {renewingId === car.id ? 'جاري التجديد...' : `تجديد ${AD_DURATION_DAYS} أيام`}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(car.id)}
+                          disabled={deletingId === car.id}
+                          aria-label="حذف الإعلان"
+                          className="inline-flex items-center justify-center gap-1.5 rounded-md border border-line px-3 py-2 text-xs font-medium text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                        >
+                          <Icon name="trash" className="h-3.5 w-3.5" />
+                          {deletingId === car.id ? '...' : ''}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </>
