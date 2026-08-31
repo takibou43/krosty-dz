@@ -68,7 +68,7 @@ export default function CarDetailPage() {
     <div className="flex min-h-screen flex-col bg-canvas" dir="rtl">
       <Header />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-24 md:pb-6">
         {loading && (
           <div className="grid gap-5 md:grid-cols-[1.5fr_1fr]">
             <div className="overflow-hidden rounded-card border border-line bg-white">
@@ -275,6 +275,43 @@ export default function CarDetailPage() {
           </>
         )}
       </main>
+
+      {/* شريط سفلي ثابت — الجوال فقط: السعر والاتصال في متناول اليد دائماً */}
+      {!loading && car && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 py-2.5 backdrop-blur md:hidden">
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-lg font-bold leading-tight text-ink nums">
+                {Number(car.price || 0).toLocaleString('en-US')}
+                <span className="mr-1 text-xs font-medium text-muted">دج</span>
+              </p>
+              <p className="truncate text-2xs text-muted">{car.wilaya || 'الجزائر'}</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleToggleFavorite}
+              aria-label={fav ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة'}
+              aria-pressed={fav}
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-line transition ${
+                fav ? 'text-accent' : 'text-slate-400'
+              }`}
+            >
+              <Icon name="heart" filled={fav} className="h-5 w-5" />
+            </button>
+
+            {car.phone_number && (
+              <a
+                href={`tel:${car.phone_number}`}
+                className="inline-flex h-11 shrink-0 items-center gap-2 rounded-md bg-accent px-5 text-sm font-semibold text-white"
+              >
+                <Icon name="phone" className="h-4 w-4" />
+                اتصال
+              </a>
+            )}
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
