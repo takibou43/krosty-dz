@@ -94,13 +94,48 @@ async function buildCaptionAI(car) {
   }
 }
 
+/* ───────── تحديد رمز الصفحة ───────── */
+
+// المفتاح المحفوظ قد يكون رمز مستخدم أو رمز صفحة.
+// النشر على صفحة يتطلب رمز صفحة، لذلك نستخرجه هنا تلقائياً:
+// - إن كان المحفوظ رمز مستخدم، نطلب me/accounts ونأخذ رمز الصفحة المطابق للرقم.
+// - إن كان رمز صفحة أصلاً، لا يُرجع me/accounts شيئاً مطابقاً فنستعمله كما هو.
+// ميزة إضافية: رمز الصفحة المستخرج من رمز مستخدم طويل الأمد لا ينتهي أبداً.
+let cachedPageToken = null;
+
+async function resolvePageToken() {
+  if (cachedPageToken) return cachedPageToken;
+
+  try {
+    const res = await fetch(
+      `${GRAPH}/me/accounts?limit=100&fields=id,access_token&access_token=${encodeURIComponent(PAGE_TOKEN)}`
+    );
+    const json = await res.json();
+    const match =
+      Array.isArray(json?.data) && json.data.find((p) => String(p?.id) === String(PAGE_ID));
+
+    if (match?.access_token) {
+      console.log('[facebook] تم استخراج رمز الصفحة من رمز المستخدم');
+      cachedPageToken = match.access_token;
+      return cachedPageToken;
+    }
+  } catch (err) {
+    console.error('[facebook] تعذّر استخراج رمز الصفحة:', err?.message);
+  }
+
+  // رمز صفحة أصلاً، أو تعذّر الاستخراج — نستعمل المحفوظ كما هو
+  cachedPageToken = PAGE_TOKEN;
+  return cachedPageToken;
+}
+
 /* ───────── النشر على فيسبوك ───────── */
 
 async function uploadUnpublishedPhoto(imageUrl) {
+  const token = await resolvePageToken();
   const res = await fetch(`${GRAPH}/${PAGE_ID}/photos`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ url: imageUrl, published: false, access_token: PAGE_TOKEN }),
+    body: JSON.stringify({ url: imageUrl, published: false, access_token: token }),
   });
   const json = await res.json();
   if (!res.ok || !json?.id) throw new Error(json?.error?.message || 'فشل رفع الصورة');
@@ -109,13 +144,14 @@ async function uploadUnpublishedPhoto(imageUrl) {
 
 // منشور نصي مع رابط الإعلان — يعمل دائماً ولا يحتاج صوراً
 async function postTextWithLink(car, message) {
+  const token = await resolvePageToken();
   const res = await fetch(`${GRAPH}/${PAGE_ID}/feed`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       message,
       link: `${SITE_URL}/cars/${car.id}`,
-      access_token: PAGE_TOKEN,
+      access_token: token,
     }),
   });
   const json = await res.json();
@@ -132,10 +168,11 @@ async function publish(car, message) {
   // صورة واحدة: منشور صورة مباشر — وعند الفشل نكتفي بمنشور نصي
   if (images.length === 1) {
     try {
+      const token = await resolvePageToken();
       const res = await fetch(`${GRAPH}/${PAGE_ID}/photos`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ url: images[0], caption: message, access_token: PAGE_TOKEN }),
+        body: JSON.stringify({ url: images[0], caption: message, access_token: token }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error?.message || 'فشل نشر الصورة');
@@ -168,13 +205,14 @@ async function publish(car, message) {
     return postTextWithLink(car, message);
   }
 
+  const token = await resolvePageToken();
   const res = await fetch(`${GRAPH}/${PAGE_ID}/feed`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       message,
       attached_media: mediaIds.map((id) => ({ media_fbid: id })),
-      access_token: PAGE_TOKEN,
+      access_token: token,
     }),
   });
   const json = await res.json();
