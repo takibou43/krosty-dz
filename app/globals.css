@@ -89,3 +89,23 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #a3a9b3;
 }
+
+/* ───────── الجوال ───────── */
+
+/* سفاري على iOS يُقرّب الصفحة تلقائياً عند التركيز على حقل أصغر من 16px.
+   نفرض 16px على كل الحقول في الشاشات الصغيرة فقط لمنع هذا التقريب المزعج. */
+@media (max-width: 767px) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* على الشاشات التي تعمل باللمس نُلغي تأثيرات المرور فوق العناصر،
+   لأنها تبقى «عالقة» بعد النقر على الجوال. */
+@media (hover: none) {
+  .group:hover .group-hover\:scale-\[1\.04\] {
+    transform: none;
+  }
+}
