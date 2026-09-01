@@ -65,9 +65,17 @@ export default function AccountPage() {
     setShareResult((prev) => ({ ...prev, [carId]: null }));
     const res = await publishCarToFacebook(carId);
     let msg;
-    if (res?.ok) msg = { ok: true, text: 'تم النشر على صفحة فيسبوك' };
-    else if (res?.skipped === 'facebook_not_configured') msg = { ok: false, text: 'ربط فيسبوك غير مُفعَّل بعد' };
-    else msg = { ok: false, text: res?.detail ? `تعذّر النشر: ${res.detail}` : 'تعذّر النشر على فيسبوك' };
+    if (res?.ok) {
+      msg = { ok: true, text: 'تم النشر على صفحة فيسبوك' };
+      // نُحدّث البطاقة فوراً حتى تتحوّل الشارة دون إعادة تحميل
+      setCars((prev) =>
+        prev.map((c) => (c.id === carId ? { ...c, fb_post_id: res.postId || 'posted' } : c))
+      );
+    } else if (res?.skipped === 'facebook_not_configured') {
+      msg = { ok: false, text: 'ربط فيسبوك غير مُفعَّل بعد' };
+    } else {
+      msg = { ok: false, text: res?.detail ? `تعذّر النشر: ${res.detail}` : 'تعذّر النشر على فيسبوك' };
+    }
     setShareResult((prev) => ({ ...prev, [carId]: msg }));
     setSharingId(null);
   };
@@ -213,16 +221,30 @@ export default function AccountPage() {
                         </button>
                       </div>
 
-                      {/* نشر يدوي على صفحة فيسبوك — احتياطي إن فشل النشر التلقائي */}
-                      <button
-                        type="button"
-                        onClick={() => handleShare(car.id)}
-                        disabled={sharingId === car.id}
-                        className="inline-flex items-center justify-center gap-1.5 rounded-md border border-line py-2 text-xs font-medium text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-ink disabled:opacity-50"
-                      >
-                        <Icon name="facebook" className="h-3.5 w-3.5" filled />
-                        {sharingId === car.id ? 'جاري النشر...' : 'نشر على فيسبوك'}
-                      </button>
+                      {/* حالة النشر على فيسبوك — لا نترك الفشل يمرّ بصمت */}
+                      {car.fb_post_id ? (
+                        <p className="flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1.5 text-2xs font-medium text-emerald-800">
+                          <Icon name="check" className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
+                          نُشر على فيسبوك
+                        </p>
+                      ) : (
+                        <>
+                          <p className="flex items-center gap-1.5 rounded-md bg-amber-50 px-2.5 py-1.5 text-2xs font-medium text-amber-800">
+                            <Icon name="info" className="h-3.5 w-3.5 shrink-0" />
+                            لم يُنشر على فيسبوك
+                          </p>
+
+                          <button
+                            type="button"
+                            onClick={() => handleShare(car.id)}
+                            disabled={sharingId === car.id}
+                            className="inline-flex items-center justify-center gap-1.5 rounded-md border border-line py-2 text-xs font-medium text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-ink disabled:opacity-50"
+                          >
+                            <Icon name="facebook" className="h-3.5 w-3.5" filled />
+                            {sharingId === car.id ? 'جاري النشر...' : 'إعادة المحاولة'}
+                          </button>
+                        </>
+                      )}
 
                       {shareResult[car.id] && (
                         <p
