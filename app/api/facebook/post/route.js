@@ -277,9 +277,29 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'forbidden' }, { status: 403 });
   }
 
+  // نُشر من قبل — لا نكرّره. ضغطتان على الزر يجب ألا تعنيا منشورين.
+  if (car.fb_post_id) {
+    return Response.json(
+      { ok: true, postId: car.fb_post_id, alreadyPosted: true },
+      { status: 200 }
+    );
+  }
+
   try {
     const message = (await buildCaptionAI(car)) || buildCaption(car);
     const postId = await publish(car, message);
+
+    // نحفظ رقم المنشور: يمنع التكرار ويجعل حالة النشر مرئية في «حسابي»
+    if (postId) {
+      const { error: saveError } = await client
+        .from('cars')
+        .update({ fb_post_id: String(postId) })
+        .eq('id', carId);
+      if (saveError) {
+        console.error('[facebook] تعذّر حفظ رقم المنشور:', saveError.message);
+      }
+    }
+
     return Response.json({ ok: true, postId }, { status: 200 });
   } catch (err) {
     // فشل فيسبوك لا يعني فشل الإعلان — نسجّله ونرجع بهدوء
