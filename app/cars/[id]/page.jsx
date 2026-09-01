@@ -8,7 +8,8 @@ import Footer from '@/components/Footer';
 import AdSpace from '@/components/AdSpace';
 import CarCard from '@/components/CarCard';
 import Icon from '@/components/Icon';
-import { getCarById, getSimilarCars } from '@/utils/supabase';
+import ReportDialog from '@/components/ReportDialog';
+import { getCarById, getSimilarCars, incrementCarViews } from '@/utils/supabase';
 import { isFavorite, toggleFavorite } from '@/utils/favorites';
 
 const SPEC_ROWS = [
@@ -51,6 +52,8 @@ export default function CarDetailPage() {
         setCar(data);
         setFav(isFavorite(data.id));
         getSimilarCars(data).then(setSimilarCars);
+        // نحتسب المشاهدة مرة واحدة لكل زيارة، بلا انتظار
+        incrementCarViews(data.id);
       }
       setLoading(false);
     };
@@ -231,6 +234,10 @@ export default function CarDetailPage() {
                         {car.year}
                       </span>
                     )}
+                    <span className="inline-flex items-center gap-1 nums">
+                      <Icon name="eye" className="h-3.5 w-3.5 text-slate-400" />
+                      {Number(car.views || 0).toLocaleString('en-US')} مشاهدة
+                    </span>
                   </div>
 
                   <div className="mt-4 border-t border-line pt-4">
@@ -255,6 +262,8 @@ export default function CarDetailPage() {
                     </p>
                   </div>
                 </div>
+
+                <ReportDialog carId={car.id} />
 
                 <AdSpace />
               </aside>
