@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { compressImages } from './image';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || '';
@@ -17,7 +18,7 @@ function getClient() {
 export const MAX_ACTIVE_ADS = 20;
 
 // مدة عرض الإعلان قبل أن يُخفى تلقائياً
-export const AD_DURATION_DAYS = 3;
+export const AD_DURATION_DAYS = 7;
 // بعد الانتهاء يبقى الإعلان في «حسابي» هذه المدة ثم يُحذف نهائياً
 export const AD_GRACE_DAYS = 30;
 
@@ -192,11 +193,70 @@ export async function getCarById(id) {
   } catch { return null; }
 }
 
+// زيادة عدّاد المشاهدات — عبر دالة في قاعدة البيانات
+// لأن سياسات RLS تسمح للمالك وحده بالتعديل، والزائر ليس المالك.
+// لا يفشل أبداً بصورة مرئية: عدّاد لا يستحق تعطيل الصفحة.
+export async function incrementCarViews(id) {
+  const client = getClient();
+  if (!client || !id) return;
+  try {
+    await client.rpc('increment_car_views', { car_id: id });
+  } catch {
+    // تجاهل
+  }
+}
+
+// البلاغات المفتوحة — للمشرف وحده.
+// سياسات RLS هي التي تفرض الصلاحية: غير المشرف يحصل على خطأ،
+// ونُرجع null لتمييز «ممنوع» عن «لا توجد بلاغات».
+export async function getOpenReports() {
+  const client = getClient();
+  if (!client) return null;
+  try {
+    const { data, error } = await client
+      .from('reports')
+      .select('*')
+      .eq('resolved', false)
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (error) return null;
+    return data || [];
+  } catch { return null; }
+}
+
+export async function resolveReport(id) {
+  const client = getClient();
+  if (!client || !id) return false;
+  try {
+    const { error } = await client.from('reports').update({ resolved: true }).eq('id', id);
+    return !error;
+  } catch { return false; }
+}
+
+// تسجيل بلاغ عن إعلان مخالف
+export async function reportCar({ carId, reason, details, reporterId }) {
+  const client = getClient();
+  if (!client || !carId || !reason) return false;
+  try {
+    const { error } = await client.from('reports').insert([
+      {
+        car_id: carId,
+        reason,
+        details: details || null,
+        reporter_id: reporterId || null,
+      },
+    ]);
+    return !error;
+  } catch { return false; }
+}
+
 export async function uploadCarImages(files) {
   const client = getClient();
   if (!client || !files || files.length === 0) return [];
+  // الضغط قبل الرفع — يقلّل حجم الإعلان إلى عُشره تقريباً
+  const prepared = await compressImages(files);
   const urls = [];
-  for (const file of files) {
+  for (const file of prepared) {
     try {
       const ext = file.name.split('.').pop();
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
