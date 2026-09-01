@@ -252,6 +252,12 @@ const PATHS = {
       <path d="M5 5h9l-1.2 3L14 11H5" />
     </>
   ),
+  eye: (
+    <>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="3.2" />
+    </>
+  ),
 };
 
 export default function Icon({ name, className = 'h-4 w-4', strokeWidth = 1.75, filled = false }) {
