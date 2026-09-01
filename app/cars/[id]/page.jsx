@@ -75,7 +75,7 @@ export default function CarDetailPage() {
         {loading && (
           <div className="grid gap-5 md:grid-cols-[1.5fr_1fr]">
             <div className="overflow-hidden rounded-card border border-line bg-white">
-              <div className="aspect-[16/10] animate-pulse bg-slate-100" />
+              <div className="aspect-[4/3] animate-pulse bg-slate-100 md:aspect-[16/10]" />
               <div className="space-y-3 p-5">
                 <div className="h-5 w-2/3 animate-pulse rounded bg-slate-100" />
                 <div className="h-7 w-1/3 animate-pulse rounded bg-slate-100" />
@@ -115,16 +115,27 @@ export default function CarDetailPage() {
 
             <div className="grid gap-5 md:grid-cols-[1.5fr_1fr]">
               {/* العمود الأيمن */}
-              <div className="space-y-4">
+              {/* min-w-0 ضروري: بدونه يتمدّد عمود الشبكة ليسع شريط المصغّرات كاملاً
+                  فتخرج الصفحة عن عرض الشاشة في الهاتف */}
+              <div className="min-w-0 space-y-4">
                 {/* معرض الصور */}
                 <div className="overflow-hidden rounded-card border border-line bg-white shadow-card">
                   {images.length > 0 ? (
                     <>
-                      <div className="relative aspect-[16/10] bg-slate-100">
+                      {/* إطار ثابت لكل الصور: نسبة 4/3 في الهاتف مثل بطاقات القائمة،
+                          و object-contain حتى تظهر صور الهاتف الطولية كاملة بدل قصّها */}
+                      <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 md:aspect-[16/10]">
+                        {/* نسخة مموّهة تملأ الفراغ خلف الصور الطولية بدل الرمادي المسطّح */}
+                        <img
+                          src={images[activeImage] || images[0]}
+                          alt=""
+                          aria-hidden="true"
+                          className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl"
+                        />
                         <img
                           src={images[activeImage] || images[0]}
                           alt={car.title}
-                          className="h-full w-full object-cover"
+                          className="relative h-full w-full object-contain"
                         />
                         {images.length > 1 && (
                           <span className="absolute bottom-3 left-3 rounded bg-black/65 px-2 py-1 text-2xs font-medium text-white backdrop-blur-sm nums">
@@ -151,7 +162,7 @@ export default function CarDetailPage() {
                       )}
                     </>
                   ) : (
-                    <div className="flex aspect-[16/10] items-center justify-center bg-slate-100 text-slate-300">
+                    <div className="flex aspect-[4/3] items-center justify-center bg-slate-100 text-slate-300 md:aspect-[16/10]">
                       <Icon name="car" className="h-14 w-14" strokeWidth={1} />
                     </div>
                   )}
@@ -194,7 +205,7 @@ export default function CarDetailPage() {
               </div>
 
               {/* العمود الجانبي */}
-              <aside className="space-y-4 md:sticky md:top-20 md:self-start">
+              <aside className="min-w-0 space-y-4 md:sticky md:top-20 md:self-start">
                 <div className="rounded-card border border-line bg-white p-5 shadow-card">
                   <div className="flex items-start justify-between gap-3">
                     <h1 className="text-lg font-bold leading-snug text-ink">{car.title}</h1>
